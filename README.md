@@ -57,6 +57,8 @@ PYTHONPATH=src python -m pytest -q
 
 > 외부 API·key는 **전부 opt-in** — 미설정 시 전체 파이프라인이 deterministic 경로로 동작합니다. 상세 환경변수는 §13.
 
+> **배포 전제 (의도된 설계)**: 본 MVP는 **평가·시연 재현성**을 위해 심사위원이 각자 컴퓨터에서 clone → 설치 → 로컬 구동하는 것을 전제로 합니다. 공용 호스팅 멀티유저 서비스가 아니며, 세션/역할 관리는 데모용 in-memory 스위처입니다(멀티유저 인증·세션은 로드맵 P3). 따라서 `.env`(API key·LLM 플래그)는 각 실행 환경에서 개별 설정합니다 — clone 시 포함되지 않는 것이 정상(gitignore).
+
 ### 0.3 저장소 접근성 (요건 ※ 주의사항 대응)
 
 - **율리는 외부 툴 없이 self-contained로 동작합니다.** 실시간 입력 가드(prompt injection 탐지)는 율리 내부 native 코드(`agent_shield_bridge.py`의 regex 가드 + `input_guard_detectors.py`의 한국어 포함 semantic 탐지)로 제공됩니다 — 별도 설치/의존 없음.
