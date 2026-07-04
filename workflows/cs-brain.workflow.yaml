@@ -1,0 +1,67 @@
+schema_version: cs-brain-workflow/v1
+name: cs-brain-self-evolving
+purpose: 매 요청 학습 신호를 캡처하고, 미래 라우팅에 가산점으로 반영하는 자기진화 사이클.
+runtime: cs_capture_learning.py + cs_search_patterns.py + cs_history_analyzer.py
+
+state:
+  request_id: string
+  context: string
+  status: enum  # SUCCESS_PATTERN | FAILURE_PATTERN
+  content: string
+  confidence: float
+  severity: enum  # critical | warning | info
+  readonly: boolean
+  scenario_type: enum  # implementation | debug | refactor | investigation | integration | migration | testing | research
+  caused_by: list
+  hypothesis: string
+
+nodes:
+  - id: capture
+    owner: brain-curator
+    kind: tool
+    description: 매 요청 종료 또는 사용자 정정 신호 발생 시 pending_patterns.yaml에 append.
+    tools: [yaml_writer]
+    outputs: [pending_pattern_id]
+
+  - id: search
+    owner: brain-curator
+    kind: tool
+    description: 매 요청 첫 단계 (SYNC)에서 search-patterns로 과거 동일 패턴 매칭 + 가산점.
+    inputs: [request_context]
+    outputs: [matched_lps, search_hit_count]
+    tools: [bm25, sentence_transformers]
+
+  - id: analyze
+    owner: brain-curator
+    kind: deterministic
+    description: search-hits.log 14일 메타 분석 → top LP, similar queries similarity, zero_hit_rate.
+    inputs: [search_hits_log]
+    outputs: [top_lps, similar_queries, zero_hit_rate]
+
+  - id: merge
+    owner: brain-curator
+    kind: tool
+    description: Stop hook 시점에 pending_patterns.yaml → project_brain.yaml 병합. readonly 패턴 제외.
+    inputs: [pending_patterns, project_brain]
+    outputs: [merged_brain]
+    trigger: session_stop_hook
+
+  - id: ablation
+    owner: qa-eval-engineer
+    kind: tool
+    description: 주간 ablation-report로 30일 fire 빈도 측정 → HEALTHY / UNDERUSED / DEAD 판정.
+    inputs: [ablation_config_yaml, search_hits_log, routing_history_log]
+    outputs: [feature_health_report]
+    cron: weekly
+
+edges:
+  - {from: START, to: capture, trigger: on_event}
+  - {from: capture, to: merge, trigger: session_stop}
+  - {from: START, to: search, trigger: every_request_sync_phase}
+  - {from: search, to: analyze, condition: search_hit_count >= 1}
+  - {from: START, to: ablation, trigger: weekly_cron}
+
+safety:
+  readonly_patterns_protected: true
+  destructive_tools_allowed: []
+  llm_calls_allowed: false  # P3까지는 deterministic + embedding only

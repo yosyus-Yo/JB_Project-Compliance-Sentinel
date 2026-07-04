@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/compliance-sentinel-final-report.schema.json",
+  "title": "Compliance Sentinel Final Report",
+  "type": "object",
+  "required": [
+    "review_type",
+    "review_request_id",
+    "input_completeness",
+    "approval_status",
+    "risk_level",
+    "confidence",
+    "confidence_score",
+    "language",
+    "channel",
+    "product_type",
+    "findings",
+    "evidence",
+    "revision_suggestions",
+    "board_diagnostics",
+    "verifier_result",
+    "audit_log_id"
+  ],
+  "properties": {
+    "review_type": {"type": "string"},
+    "review_request_id": {"type": "string"},
+    "input_completeness": {"type": "object"},
+    "approval_status": {"enum": ["APPROVED", "APPROVE_WITH_CHANGES", "REJECTED", "HUMAN_REVIEW_REQUIRED"]},
+    "risk_level": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+    "confidence": {"enum": ["PERFECT", "VERIFIED", "PARTIAL", "FEEDBACK", "FAILED"]},
+    "confidence_score": {"type": "number", "minimum": 0, "maximum": 1},
+    "language": {"type": "string"},
+    "channel": {"type": "string"},
+    "product_type": {"type": "string"},
+    "findings": {"type": "array"},
+    "evidence": {"type": "array"},
+    "revision_suggestions": {"type": "array"},
+    "board_diagnostics": {"type": "object"},
+    "verifier_result": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {"enum": ["PASSED", "PARTIAL", "FAILED"]}
+      }
+    },
+    "audit_log_id": {"type": "string"}
+  }
+}

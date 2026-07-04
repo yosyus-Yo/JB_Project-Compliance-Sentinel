@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>결과(리포트) 화면 시안 — 입력 화면과 톤 일관 (Variant A forest)</title>
+<!--
+  결과 화면 시안. 입력 화면 v1(forest)과 톤 일관.
+  직전 제안서 v2 반영: ① 파이프라인 stepper(시스템 정교함 시각화)
+  ② 수정문구 상단 배치 ③ 근거 배지 ✓/✗ 아이콘(색약) ④ De-AI(그라데이션 없음)
+-->
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<style>
+  :root {
+    --forest-700:#0f766e; --forest-800:#0b4f4a; --forest-50:#e4f7f4; --forest-100:#c8efe8;
+    --brass-700:#b45f2a; --brass-50:#fff2e8;
+    --danger:#9f1239; --danger-soft:#fff1f2; --danger-text:#be123c;
+    --ink:#17211f; --muted:#59656b; --bg:#f4f6f5; --line:#e2e8e6; --card:#ffffff;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif; color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased; }
+  header { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:var(--card); border-bottom:1px solid var(--line); }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; }
+  .brand .mark { width:26px; height:26px; border-radius:7px; background:var(--forest-700); display:grid; place-items:center; color:#fff; font-size:14px; }
+  .brand .sub { color:var(--muted); font-weight:500; font-size:12.5px; }
+  .back { font-size:13px; color:var(--muted); cursor:pointer; }
+  .wrap { max-width:880px; margin:0 auto; padding:28px 24px 60px; }
+
+  /* ① 처리 파이프라인 stepper — 시스템 정교함 시각화 */
+  .pipeline { display:flex; align-items:center; gap:4px; flex-wrap:wrap; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 18px; margin-bottom:18px; }
+  .pipeline .pl-label { font-size:11.5px; color:var(--muted); font-weight:600; margin-right:8px; letter-spacing:0.02em; }
+  .step { display:flex; align-items:center; gap:5px; font-size:12.5px; color:var(--forest-800); }
+  .step .s-ic { width:16px; height:16px; border-radius:50%; background:var(--forest-700); color:#fff; font-size:10px; display:grid; place-items:center; }
+  .step.warn .s-ic { background:var(--brass-700); }
+  .step.now { font-weight:700; }
+  .step.now .s-ic { background:var(--danger); }
+  .sep { color:#c2ccc9; font-size:11px; margin:0 2px; }
+
+  /* 결정 hero */
+  .hero { border-radius:14px; padding:22px 24px; color:#fff; background:var(--danger); display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+  .hero .eyebrow { font-size:11.5px; opacity:.8; letter-spacing:0.06em; text-transform:uppercase; }
+  .hero h2 { font-size:26px; font-weight:800; margin-top:4px; letter-spacing:-0.01em; }
+  .hero p { font-size:14px; opacity:.92; margin-top:8px; max-width:480px; line-height:1.5; }
+  .hero .pill { background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.3); padding:6px 13px; border-radius:999px; font-size:12.5px; font-weight:600; white-space:nowrap; }
+
+  /* ② 수정 권고 — 상단 가까이 (가장 자주 쓰는 정보) */
+  .revision { background:var(--forest-50); border:1px solid var(--forest-100); border-radius:12px; padding:18px 20px; margin-top:16px; }
+  .revision .r-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .revision h3 { font-size:14px; color:var(--forest-800); }
+  .revision .copy-btn { font-size:12.5px; color:var(--forest-700); background:#fff; border:1px solid var(--forest-100); padding:6px 13px; border-radius:8px; cursor:pointer; }
+  .revision p { font-size:14px; line-height:1.6; color:var(--ink); }
+
+  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:16px; }
+  .metric { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:13px 14px; }
+  .metric span { font-size:11.5px; color:var(--muted); }
+  .metric strong { display:block; font-size:15px; margin-top:3px; }
+  .metric em { font-size:11px; color:var(--muted); font-style:normal; }
+
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-top:16px; }
+  .panel-title { font-size:14px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .panel-title .count { font-size:11.5px; color:var(--muted); font-weight:500; }
+
+  /* 6인 보드 카드 */
+  .board { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .bcard { border:1px solid var(--line); border-radius:10px; padding:13px; }
+  .bcard .bc-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
+  .bcard .who { display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; }
+  .bcard .av { width:22px; height:22px; border-radius:50%; background:var(--forest-50); display:grid; place-items:center; font-size:12px; }
+  .bcard p { font-size:12px; color:var(--muted); line-height:1.45; }
+  .tag { font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:6px; }
+  .tag.reject { background:var(--danger-soft); color:var(--danger-text); }
+  .tag.amend { background:var(--brass-50); color:var(--brass-700); }
+  .tag.ok { background:var(--forest-50); color:var(--forest-700); }
+
+  /* findings */
+  .finding { border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:10px; }
+  .finding .f-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .finding .f-cols { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .finding h4 { font-size:12px; color:var(--muted); margin-bottom:4px; }
+  .finding .bad { color:var(--danger-text); font-size:13.5px; font-weight:600; }
+  .finding .fix { color:var(--forest-800); font-size:13.5px; }
+  .finding .law { font-size:11.5px; color:var(--muted); margin-top:6px; }
+
+  /* ③ 근거 배지 — ✓/✗ 아이콘 (색약 접근성) */
+  .evidence-row { display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid var(--line); }
+  .evidence-row:last-child { border-bottom:0; }
+  .ev-clause strong { font-size:13px; }
+  .ev-clause p { font-size:12px; color:var(--muted); margin-top:2px; }
+  .ev-flags { display:flex; gap:6px; }
+  .flag { font-size:11px; font-weight:600; padding:4px 9px; border-radius:7px; display:inline-flex; align-items:center; gap:4px; }
+  .flag.yes { background:var(--forest-50); color:var(--forest-700); }
+  .flag.no { background:var(--danger-soft); color:var(--danger-text); }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="mark">⚖</span> Compliance Sentinel <span class="sub">· 심의 결과</span></div>
+    <span class="back">← 새 콘텐츠 심의</span>
+  </header>
+  <div class="wrap">
+
+    <!-- ① 파이프라인 stepper -->
+    <div class="pipeline">
+      <span class="pl-label">처리 경로</span>
+      <span class="step"><span class="s-ic">✓</span>입력</span><span class="sep">›</span>
+      <span class="step"><span class="s-ic">✓</span>분류</span><span class="sep">›</span>
+      <span class="step"><span class="s-ic">✓</span>근거검색</span><span class="sep">›</span>
+      <span class="step"><span class="s-ic">✓</span>규칙검사</span><span class="sep">›</span>
+      <span class="step"><span class="s-ic">✓</span>6인 보드</span><span class="sep">›</span>
+      <span class="step warn"><span class="s-ic">!</span>교차검증</span><span class="sep">›</span>
+      <span class="step now"><span class="s-ic">●</span>판정</span>
+    </div>
+
+    <!-- 결정 hero -->
+    <div class="hero">
+      <div>
+        <p class="eyebrow">Decision · 심의 결과</p>
+        <h2>반려 (재작성 필요)</h2>
+        <p>고위험 표현이 포함되어 재작성과 준법 담당자 확인이 필요합니다. 보호 처리 완료 · 감사 로그 기록됨.</p>
+      </div>
+      <span class="pill">위험도 CRITICAL</span>
+    </div>
+
+    <!-- ② 수정 권고 (상단) -->
+    <div class="revision">
+      <div class="r-head"><h3>✏ 권고 수정 문구</h3><button class="copy-btn">복사</button></div>
+      <p>JB 슈퍼적금 출시! <s>누구나 연 8% 확정 수익, 원금 보장</s> → "최고 연 8%(우대조건 충족 시), 예금자보호법에 따라 5천만원까지 보호" 로 수정하고 가입 조건·금리 범위를 명시하세요.</p>
+    </div>
+
+    <div class="grid">
+      <div class="metric"><span>Review ID</span><strong>RR-95efc2</strong><em>심의 요청</em></div>
+      <div class="metric"><span>Audit ID</span><strong>AUD-45264a</strong><em>감사 로그</em></div>
+      <div class="metric"><span>신뢰도</span><strong>35%</strong><em>FAILED</em></div>
+      <div class="metric"><span>경로</span><strong>HITL</strong><em>담당자 검토</em></div>
+    </div>
+
+    <!-- 6인 보드 -->
+    <div class="panel">
+      <div class="panel-title">6인 준법 보드 의견 <span class="count">· 의견 분포: 반려 4 / 수정 2</span></div>
+      <div class="board">
+        <div class="bcard"><div class="bc-head"><span class="who"><span class="av">🛡</span>소비자보호</span><span class="tag reject">REJECT</span></div><p>"원금 보장"·"무조건 승인"은 명백한 소비자 오인 표현.</p></div>
+        <div class="bcard"><div class="bc-head"><span class="who"><span class="av">🏛</span>법률검토</span><span class="tag reject">REJECT</span></div><p>금융광고 심의 기준상 확정 수익 단정 표현 위반.</p></div>
+        <div class="bcard"><div class="bc-head"><span class="who"><span class="av">💼</span>실무적용</span><span class="tag amend">AMEND</span></div><p>우대조건·보호한도 명시 시 배포 가능.</p></div>
+      </div>
+    </div>
+
+    <!-- findings -->
+    <div class="panel">
+      <div class="panel-title">표현 리스크 <span class="count">· 3건</span></div>
+      <div class="finding">
+        <div class="f-head"><span class="tag reject">HIGH</span><span style="font-size:11.5px;color:var(--muted);font-family:monospace;">MF-001</span></div>
+        <div class="f-cols">
+          <div><h4>탐지 표현</h4><p class="bad">"원금 보장"</p></div>
+          <div><h4>권고 수정</h4><p class="fix">예금자보호 여부·한도를 명확히 고지</p><p class="law">금융광고 심의 기준 / CONTENT-RULE</p></div>
+        </div>
+      </div>
+      <div class="finding">
+        <div class="f-head"><span class="tag reject">HIGH</span><span style="font-size:11.5px;color:var(--muted);font-family:monospace;">MF-002</span></div>
+        <div class="f-cols">
+          <div><h4>탐지 표현</h4><p class="bad">"확정 수익"</p></div>
+          <div><h4>권고 수정</h4><p class="fix">조건부 혜택과 변동 조건을 분리 표시</p><p class="law">금융광고 심의 기준 / CONTENT-RULE</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 근거 배지 ✓/✗ 아이콘 -->
+    <div class="panel">
+      <div class="panel-title">근거 검증 <span class="count">· Verifier PARTIAL</span></div>
+      <div class="evidence-row">
+        <div class="ev-clause"><strong>금융광고 심의 기준</strong><p>소비자가 오인하지 않도록 중요 조건·제한사항을 명확히 표시</p></div>
+        <div class="ev-flags"><span class="flag yes">✓ 존재</span><span class="flag yes">✓ 일치</span><span class="flag no">✗ 부분적용</span></div>
+      </div>
+      <div class="evidence-row">
+        <div class="ev-clause"><strong>예금자보호법</strong><p>보호 한도·대상 고지 의무</p></div>
+        <div class="ev-flags"><span class="flag yes">✓ 존재</span><span class="flag no">✗ 미일치</span><span class="flag yes">✓ 적용</span></div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

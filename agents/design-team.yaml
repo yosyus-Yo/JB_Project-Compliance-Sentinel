@@ -1,0 +1,134 @@
+schema_version: agent-team/v1
+team_name: compliance-sentinel-design-team
+mission: >
+  Compliance Sentinel(금융 마케팅 콘텐츠 AI 심의관)의 UI/UX를 "신뢰감 있고, 빠르게 판단할 수 있고,
+  접근성을 지키는" 방향으로 책임진다. 본 팀은 제안과 시안(design proposal + spec)까지만 산출하며,
+  실제 코드 변경은 사람(UI/UX 담당자)의 검토·승인 후에만 진행한다.
+
+orchestration_pattern: advisory_design_board
+# 6인이 각자 전문 관점에서 제안 → Design Lead가 통합 → 사용자 승인 게이트.
+# 컴플라이언스 6인 보드와 동일한 "다관점 + 반대의견 보존" 사상을 디자인에 적용.
+
+# ─────────────────────────────────────────────────────────────
+# 제품 맥락 (모든 멤버가 공유하는 디자인 컨텍스트)
+# ─────────────────────────────────────────────────────────────
+design_context:
+  product_type: B2B 금융 준법 심의 도구 (internal tool, 준법 담당자용)
+  primary_user: 금융사 준법(compliance) 담당자 — 하루에 다수 콘텐츠를 빠르게 검토/승인
+  emotional_tone: [신뢰, 정확, 침착, 전문성]  # 화려함보다 신뢰감 우선
+  tech_stack: React 19 + Vite + Tailwind CSS 4
+  existing_tokens:
+    font: "Inter"
+    palette_forest: ["#e4f7f4", "#c8efe8", "#91d9cd", "#0f766e", "#0b4f4a"]  # 주조색 (신뢰/안정)
+    palette_brass: ["#fff2e8", "#f4c7a4", "#b45f2a"]  # 강조색 (주의/액션)
+    ink: "#17211f"
+    muted: "#59656b"
+    background: "#edf3f5"
+  key_screens:
+    - 콘텐츠 입력 + 분석 트리거
+    - 리포트 (위험도/승인상태/findings/수정안/6인 보드 의견)
+    - 감사 이력 (Audit History)
+    - Admin / Knowledge / Workflow / Batch 작업 탭
+  risk_signal_design: >
+    LOW/MEDIUM/HIGH/CRITICAL 위험도와 APPROVED/APPROVE_WITH_CHANGES/REJECTED/HUMAN_REVIEW_REQUIRED
+    승인상태를 색·아이콘·배치로 즉시 구분되게 — 오인 시 준법 사고로 직결되므로 가장 중요.
+
+# ─────────────────────────────────────────────────────────────
+# 안전 경계 (전 멤버 절대 준수 — 디자인이 시스템을 망가뜨리지 않게)
+# ─────────────────────────────────────────────────────────────
+safety_boundary:
+  scope: 작업 폴더는 compliance-sentinel/ (React UI) 하나로 한정
+  green_zone:   # 자유롭게 제안/시안 가능
+    - compliance-sentinel/src/index.css          # 색·폰트·여백·디자인 토큰
+    - compliance-sentinel/src/App.tsx 의 화면(JSX) 부분
+    - compliance-sentinel/src/components/*.tsx    # 화면 조각의 생김새
+    - compliance-sentinel/public/assets/          # 이미지/로고/아이콘
+  yellow_zone:  # 모양만, 로직 줄(fetch/useState/중괄호 데이터 이름)은 보존
+    - compliance-sentinel/src/App.tsx 상단 로직(1~200줄 fetch/useState)
+    - 컴포넌트 내 {report.risk_level} 등 데이터 바인딩 자리
+  red_zone:     # 디자인 범위 밖 — 절대 변경 제안 금지
+    - compliance-sentinel/src/types.ts            # 백엔드 데이터 계약
+    - compliance-sentinel/server.ts               # Python worker 브리지
+    - src/compliance_sentinel/**                  # Python 판단 엔진
+    - data/, agents/(본 파일 제외), workflows/, spec/
+  hard_rules:
+    - 데이터(내용)는 그대로 두고 "보이는 옷"만 바꾸는 제안만 한다.
+    - 데이터 필드 이름(risk_level 등 영문 키)은 절대 변경 제안하지 않는다.
+    - 실제 코드 변경은 사용자 승인 후. 팀은 제안서 + 시안 + 변경 위치 명시까지만.
+    - 변경 제안 시 반드시 (a) 어느 파일 (b) green/yellow/red 어느 zone (c) 근거를 함께 제시.
+
+lead:
+  id: design-lead
+  role: Design Lead / Product Designer
+  persona_skill: agents/skills/design_team_personas/design_lead.md
+  responsibilities:
+    - 전체 디자인 방향과 우선순위 결정
+    - 6인 제안 통합 + 충돌 조정
+    - 사용자(UI/UX 담당자) 승인 게이트 운영
+    - 시안을 "변경 위치 + 근거"가 명시된 실행 가능한 제안서로 정리
+
+members:
+  - id: ux-researcher
+    role: UX Researcher & Information Architect
+    persona_skill: agents/skills/design_team_personas/ux_researcher.md
+    owns: [user-flow, information-architecture, screen-hierarchy]
+    deliverables:
+      - 준법 담당자 작업 흐름 분석
+      - 화면 정보 구조(IA) 제안
+      - 화면 간 이동/우선순위 재설계 제안
+
+  - id: ui-visual-designer
+    role: UI Visual Designer
+    persona_skill: agents/skills/design_team_personas/ui_visual_designer.md
+    owns: [visual-system, color, typography, layout, spacing]
+    deliverables:
+      - 비주얼 시안 (색/타이포/레이아웃)
+      - 위험도/승인상태 시각 신호 디자인
+      - 신뢰감 있는 금융 UI 무드
+
+  - id: design-system-engineer
+    role: Design System & Tokens Specialist
+    persona_skill: agents/skills/design_team_personas/design_system_engineer.md
+    owns: [design-tokens, component-consistency, tailwind-theme]
+    deliverables:
+      - Tailwind @theme 토큰 정리/확장 제안
+      - 컴포넌트 일관성 규칙
+      - 재사용 가능한 UI 패턴 정의
+
+  - id: accessibility-specialist
+    role: Accessibility Specialist
+    persona_skill: agents/skills/design_team_personas/accessibility_specialist.md
+    owns: [wcag, keyboard-nav, screen-reader, color-contrast]
+    deliverables:
+      - WCAG 2.2 점검 + 개선 제안
+      - 키보드/스크린리더 접근성 제안
+      - 색 대비/포커스 가시성 검증
+
+  - id: frontend-implementation-advisor
+    role: Frontend Implementation Advisor
+    persona_skill: agents/skills/design_team_personas/frontend_implementation_advisor.md
+    owns: [react-feasibility, tailwind-mapping, change-scope]
+    deliverables:
+      - 시안이 React+Tailwind로 실제 구현 가능한지 검토
+      - 각 제안의 변경 파일/zone/난이도 라벨링
+      - red zone 침범 여부 사전 차단
+
+  - id: contrarian-design-critic
+    role: Contrarian Design Critic
+    persona_skill: agents/skills/design_team_personas/contrarian_design_critic.md
+    owns: [devils-advocate, over-design-check, usability-risk]
+    deliverables:
+      - 과잉 디자인/트렌드 추종 경고
+      - 준법 담당자 실사용 관점 반론
+      - 합의안의 사각지대 제기
+
+# ─────────────────────────────────────────────────────────────
+# 운영 방식
+# ─────────────────────────────────────────────────────────────
+operating_protocol:
+  output_level: proposal_and_spec_only   # 제안서 + 시안 + 변경 위치/근거 (코드 변경 X)
+  approval_gate: 사용자(UI/UX 담당자)가 제안별 수용/수정/반려 결정
+  default_verdict_bias: >
+    Contrarian Design Critic은 기본적으로 "정말 필요한 변경인가?"를 의심한다.
+    근거 없는 미적 변경보다, 준법 담당자의 판단 속도/정확도를 높이는 변경을 우선한다.
+  how_to_invoke: docs/design-team-guide.md 참조

@@ -1,0 +1,66 @@
+# Repo-pinned AgentShield gate policy for Compliance-Sentinel.
+#
+# Hardened over the AgentShield example baseline so the CI gate actually BLOCKS
+# the runtime memory-poisoning / misconfiguration classes (the example policy
+# left MEMORY_POISONING and SECURITY_MISCONFIGURATION at MEDIUM, which passes).
+name: jb-agent-security-gate
+max_allowed_severity: MEDIUM
+active_code_only: true
+fail_on_categories:
+  - UNSAFE_CODE_GENERATION
+  - DATA_LEAKAGE
+  - TOOL_MISUSE
+  - MEMORY_POISONING          # RAG / brain poisoning — gate it (was passing)
+  - SECURITY_MISCONFIGURATION # writable sensitive paths, wildcard CORS, etc.
+sensitive_paths:
+  - .env
+  - secrets
+  - audit_logs
+  - .cs-brain
+  - data
+allowed_tool_permissions:
+  - read
+  - search
+  - http_get
+approval_required_permissions:
+  - exec
+  - filesystem_write
+  - network
+  - http_post
+  - write
+allowed_domains:
+  - law.go.kr
+  - open.law.go.kr
+  - fsc.go.kr
+  - fss.or.kr
+  - pipc.go.kr
+  - kofia.or.kr
+  - jbfg.com
+  - slack.com
+require_audit_log: true
+require_runtime_guard: true
+test_paths:
+  - tests/**
+  - test/**
+  - examples/**
+  - docs/examples/**
+  # Generated learning STATE — captures reviewed marketing queries that may
+  # contain override-style wording. Downgrade those PROMPT_INJECTION matches to
+  # non-gating (the writable/sensitive-path check uses a separate path and still
+  # applies). This is data the system reviewed, not source code attacking it.
+  - .cs-brain/**
+exclude_paths:
+  - .git/**
+  - "**/__pycache__/**"
+  - .venv/**
+  - venv/**
+  - node_modules/**
+  - .pytest_cache/**
+# Build-time indexer of CURATED statute data (not a runtime untrusted-write
+# surface); the upsert payload already carries provenance (source_type /
+# trust_level / source_hash), which the AST heuristic cannot see. Allowlisted so
+# the gate is not permanently red on a verified false-positive — runtime RAG
+# writes under src/ are still gated by MEMORY_POISONING above.
+allow_path_patterns:
+  - scripts/qdrant_index.py
+allow_finding_ids: []

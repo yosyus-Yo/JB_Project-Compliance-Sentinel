@@ -1,0 +1,71 @@
+schema_version: agent-team/v2
+team_name: financial-marketing-content-review-team
+mission: 대고객 금융 마케팅 콘텐츠의 다국어·다채널 준법 심의 병목을 줄이고, 위험 표현 탐지·수정안·승인 workflow를 자동화한다.
+orchestration_pattern: langgraph_hierarchical_with_critic_and_hitl
+
+skill_injections:
+  default_skill: agents/skills/financial_marketing_content_reviewer/SKILL.md
+  injected_roles:
+    - rule-reviewer
+    - multilingual-reviewer
+    - revision-writer
+    - adversarial-critic
+    - audit-officer
+  storage_policy:
+    skill: reviewer procedures/checklists/revision heuristics
+    rag: law/internal standard/product disclosure source text
+    memory: repeated outcomes and approved experience patterns
+    memory_approval_required: true
+
+lead:
+  id: content-compliance-orchestrator
+  role: Content Compliance Orchestrator
+  model_tier: deep
+  responsibilities:
+    - 콘텐츠 심의 workflow 조율
+    - 승인 상태 결정
+    - 준법 담당자 handoff 생성
+
+members:
+  - id: intake-classifier
+    role: Language / Channel / Product Classifier
+    model_tier: shallow
+    deliverables: [language, channel, content_type, product_type]
+
+  - id: rule-reviewer
+    role: Rule-Based Financial Ad Reviewer
+    model_tier: deterministic
+    deliverables: [forbidden_expression_findings, required_disclosure_gaps]
+
+  - id: multilingual-reviewer
+    role: Cross-Cultural Multilingual Reviewer
+    model_tier: standard
+    languages: [en, zh, vi, ja, id]
+    deliverables: [multilingual_risk_notes, translation_sensitive_flags]
+
+  - id: revision-writer
+    role: Safe Revision Generator
+    model_tier: deep
+    deliverables: [channel_aware_revisions, safer_copy]
+
+  - id: adversarial-critic
+    role: Independent gpt-5.5 Medium Critic
+    model_tier: critical
+    isolation_required: true
+    deliverables: [false_negative_check, overclaim_check, final_risk_challenge]
+
+  - id: workflow-publisher
+    role: Slack / Notion Mock Publisher
+    model_tier: deterministic
+    deliverables: [slack_payload, notion_payload]
+
+  - id: audit-officer
+    role: Audit and Evidence Officer
+    model_tier: deterministic
+    deliverables: [audit_log, evidence_trace, pii_safety_check]
+
+rules:
+  - 실제 법률 자문이 아니라 준법 심의 보조로 표현한다.
+  - PII 원문은 downstream/LLM/audit에 남기지 않는다.
+  - critical 또는 rejection 사유가 있으면 human review를 필수화한다.
+  - 다국어 콘텐츠는 한국 금융광고 기준 기반 screening으로 표현하고, 해외법 완전판정으로 말하지 않는다.

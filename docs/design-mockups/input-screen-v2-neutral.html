@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>입력 화면 시안 — Variant B (기관/뉴트럴)</title>
+<!-- Variant B: 가장 보수적·기관(은행 어드민) 톤. 거의 무채색 + forest 포인트만. 문구 격식체. -->
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<style>
+  :root {
+    --forest-700:#0f766e; --forest-800:#0b4f4a; --forest-50:#eef5f4;
+    --ink:#1b2326; --muted:#5c676d; --bg:#eef1f3; --line:#dde3e6; --card:#ffffff; --slate:#37464f;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif; color:var(--ink); background:var(--bg); min-height:100vh; display:flex; flex-direction:column; -webkit-font-smoothing:antialiased; }
+  header { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:var(--card); border-bottom:1px solid var(--line); }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; letter-spacing:-0.01em; }
+  .brand .mark { width:26px; height:26px; border-radius:6px; background:var(--slate); display:grid; place-items:center; color:#fff; font-size:13px; }
+  .brand .sub { color:var(--muted); font-weight:500; font-size:12.5px; }
+  .header-status { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--muted); border:1px solid var(--line); padding:5px 11px; border-radius:7px; }
+  .dot { width:6px; height:6px; border-radius:50%; background:var(--forest-700); }
+  main { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px 24px; }
+  .hero { width:100%; max-width:660px; text-align:center; }
+  .eyebrow { display:inline-block; font-size:12px; font-weight:600; color:var(--slate); letter-spacing:0.04em; margin-bottom:18px; text-transform:uppercase; }
+  h1 { font-size:clamp(26px,4vw,36px); font-weight:700; line-height:1.25; letter-spacing:-0.02em; margin-bottom:12px; color:var(--ink); }
+  .lede { color:var(--muted); font-size:15.5px; line-height:1.6; margin-bottom:30px; }
+  .composer { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; text-align:left; box-shadow:0 1px 3px rgba(27,35,38,0.05); }
+  .composer:focus-within { border-color:var(--slate); }
+  .composer textarea { width:100%; border:0; outline:0; resize:none; font:inherit; font-size:15.5px; line-height:1.5; min-height:60px; color:var(--ink); background:transparent; }
+  .composer textarea::placeholder { color:#97a2a7; }
+  .composer-foot { display:flex; align-items:center; justify-content:space-between; margin-top:12px; padding-top:12px; border-top:1px solid var(--line); }
+  .meta-hint { font-size:12px; color:var(--muted); }
+  .submit { border:0; cursor:pointer; background:var(--slate); color:#fff; font:inherit; font-weight:600; font-size:13.5px; padding:9px 18px; border-radius:8px; }
+  .submit:hover { background:#283238; }
+  .channels { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; margin-top:20px; }
+  .chip { background:transparent; border:1px solid var(--line); border-radius:7px; padding:8px 14px; font-size:12.5px; color:var(--muted); cursor:pointer; }
+  .chip:hover { border-color:var(--slate); color:var(--ink); }
+  .examples { margin-top:28px; }
+  .examples-label { font-size:12px; color:var(--muted); margin-bottom:10px; }
+  .example-row { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; }
+  .example { background:var(--card); border:1px solid var(--line); border-radius:7px; padding:7px 13px; font-size:12.5px; color:var(--slate); cursor:pointer; }
+  .example:hover { border-color:var(--forest-700); color:var(--forest-700); }
+  footer { border-top:1px solid var(--line); background:var(--card); padding:18px 32px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:24px; }
+  .trust { display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--muted); }
+  .trust strong { color:var(--ink); font-weight:600; }
+  .trust .ic { color:var(--forest-700); }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="mark">CS</span> Compliance Sentinel <span class="sub">· 준법 심의 시스템</span></div>
+    <div class="header-status"><span class="dot"></span> 심의 엔진 정상</div>
+  </header>
+  <main>
+    <div class="hero">
+      <span class="eyebrow">JB 금융그룹 · 대고객 콘텐츠 준법 심의</span>
+      <h1>심의할 콘텐츠를 입력해 주십시오</h1>
+      <p class="lede">입력된 마케팅 콘텐츠는 6인 준법 보드의 다관점 검토를 거쳐<br />표현 리스크·필수 고지·수정 권고가 산출됩니다.</p>
+      <div class="composer">
+        <textarea placeholder="심의 대상 문구를 입력하십시오.  예) JB 슈퍼적금 출시, 누구나 연 8% 확정 수익…"></textarea>
+        <div class="composer-foot">
+          <span class="meta-hint">개인정보 자동 마스킹 · 감사 로그 기록</span>
+          <button class="submit">심의 요청</button>
+        </div>
+      </div>
+      <div class="channels"><span class="chip">배너</span><span class="chip">앱푸시</span><span class="chip">SNS</span><span class="chip">이메일</span><span class="chip">랜딩페이지</span></div>
+      <div class="examples">
+        <p class="examples-label">예시 시나리오</p>
+        <div class="example-row"><span class="example">적금 "원금 보장" 광고</span><span class="example">대출 "무조건 승인" 배너</span><span class="example">카드 혜택 SNS</span><span class="example">영문 투자상품 문구</span></div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <span class="trust"><span class="ic">⚖</span> <strong>6인 준법 보드</strong></span>
+    <span class="trust"><span class="ic">🔒</span> <strong>PII 자동 마스킹</strong></span>
+    <span class="trust"><span class="ic">📋</span> <strong>감사 로그</strong></span>
+    <span class="trust"><span class="ic">🌏</span> <strong>6개 언어</strong></span>
+  </footer>
+</body>
+</html>

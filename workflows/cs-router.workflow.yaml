@@ -1,0 +1,94 @@
+schema_version: cs-router-workflow/v1
+name: cs-router-5phase
+purpose: 사용자 요청을 5축으로 분류하고 최적 워크플로우+모델을 라우팅한다 (SEAS /auto 패턴 차용).
+runtime: cs_router.py (deterministic CLI) + LLM fallback (optional)
+
+state:
+  raw_input: string
+  redacted_text: string
+  domain: string  # 8 domain 중 하나
+  complexity: enum  # simple | medium | complex | massive
+  quality: enum     # standard | high | critical
+  collaboration: enum  # solo | team_required | sandbox_isolation
+  automation: enum  # standard | loop | superclaude
+  matched_pipeline: string | null
+  routed_workflow: string  # 선택된 cs-evolve / cs-evolve-team / etc
+  routed_options: list
+  routed_model_tier: enum  # shallow | standard | deep | critical
+  brain_hits: list  # search-patterns top-N
+
+nodes:
+  - id: classify
+    owner: router-engineer
+    kind: deterministic
+    description: 사용자 입력을 5축으로 분류한다. .cs-brain/routing-table.yaml의 patterns와 정규식 매칭.
+    inputs: [raw_input]
+    outputs: [domain, complexity, quality, collaboration, automation]
+
+  - id: disambiguate
+    owner: router-engineer
+    kind: deterministic_or_llm
+    description: 2개+ 도메인이 동시 매칭될 때만 발동. routing-table.yaml의 known_ambiguities로 행동 동사 기반 결정.
+    condition: domain_matches.length >= 2
+    inputs: [raw_input, domain_matches]
+    outputs: [domain]
+
+  - id: pipeline_detect
+    owner: router-engineer
+    kind: deterministic
+    description: pipelines 섹션 patterns와 매칭하여 multi-step 파이프라인 모드 판정.
+    inputs: [raw_input]
+    outputs: [matched_pipeline]
+
+  - id: sync_brain
+    owner: brain-curator
+    kind: deterministic
+    description: Brain search-patterns 호출로 과거 동일 패턴 매칭. ROUTE 결정에 가산점.
+    inputs: [raw_input, domain]
+    outputs: [brain_hits]
+    optional: true  # Brain 부재 시 skip
+
+  - id: route
+    owner: router-engineer
+    kind: deterministic
+    description: 5축 + brain_hits + 매트릭스로 최종 명령어+옵션 결정.
+    inputs: [domain, complexity, quality, collaboration, automation, matched_pipeline, brain_hits]
+    outputs: [routed_workflow, routed_options, routed_model_tier]
+
+  - id: confirm
+    owner: product-architect
+    kind: interrupt
+    description: 사용자에게 결정 결과 제시. --dry-run 모드면 여기서 종료.
+    inputs: [routed_workflow, routed_options]
+
+  - id: delegate
+    owner: orchestrator
+    kind: orchestration
+    description: 선택된 workflow 실행 위임. routing_history.log에 7-col TSV append.
+    inputs: [routed_workflow, routed_options]
+    outputs: [outcome]
+    tools: [audit_logger]
+
+edges:
+  - {from: START, to: classify}
+  - {from: classify, to: disambiguate, condition: multiple_domain_match}
+  - {from: classify, to: pipeline_detect, condition: single_domain_match}
+  - {from: disambiguate, to: pipeline_detect}
+  - {from: pipeline_detect, to: sync_brain}
+  - {from: sync_brain, to: route}
+  - {from: route, to: confirm}
+  - {from: confirm, to: delegate, condition: not_dry_run}
+  - {from: confirm, to: END, condition: dry_run}
+  - {from: delegate, to: END}
+
+routing_rules:
+  multiple_domain_match: "len(domain_matches) >= 2"
+  single_domain_match: "len(domain_matches) == 1"
+  not_dry_run: "not args.dry_run"
+  dry_run: "args.dry_run"
+
+safety:
+  llm_calls_allowed: false  # deterministic only (P1)
+  destructive_tools_allowed: []
+  external_side_effect_tools_allowed: []
+  human_interrupt_before: [confirm]

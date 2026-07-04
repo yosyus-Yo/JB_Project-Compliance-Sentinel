@@ -1,0 +1,191 @@
+schema_version: agent-team/v1
+team_name: compliance-sentinel-build-team
+mission: JB Fin:AI 준법자문가 AI Agent를 spec-first 방식으로 구축하고, MVP 데모와 검증 게이트를 완성한다.
+orchestration_pattern: hierarchical_manager_worker_with_verifier_loop
+
+lead:
+  id: product-architect
+  role: Product Architect / Team Lead
+  responsibilities:
+    - 전체 scope 관리
+    - spec/plan/tasks 정합성 유지
+    - 팀 산출물 통합
+    - release gate 최종 승인
+
+members:
+  - id: legal-domain-lead
+    role: Legal & Compliance Domain Lead
+    owns: [T-101, T-105, legal-counsel-prompt, compliance-taxonomy]
+    deliverables:
+      - 법령 범위 정의
+      - 조문 검증 기준
+      - 위험 분류 체계
+
+  - id: rag-engineer
+    role: RAG Engineer
+    owns: [T-103, T-104, T-204]
+    deliverables:
+      - Qdrant schema
+      - hybrid retriever
+      - retrieval eval dataset
+
+  - id: langgraph-engineer
+    role: LangGraph Workflow Engineer
+    owns: [T-201, T-202, T-208]
+    deliverables:
+      - ComplianceState
+      - StateGraph routing
+      - retry/human review loop
+
+  - id: multi-agent-orchestrator
+    role: Multi-Agent Orchestrator
+    owns: [T-205, T-206]
+    deliverables:
+      - 6인 board prompt set
+      - CEO synthesizer
+      - board aggregation logic
+
+  - id: compliance-verifier-engineer
+    role: Compliance Verifier Engineer
+    owns: [T-105, T-207]
+    deliverables:
+      - atomic claim extractor
+      - citation checker
+      - verifier result schema
+
+  - id: security-engineer
+    role: Security / PII Engineer
+    owns: [T-203]
+    deliverables:
+      - PII detector/redactor
+      - LLM input safety gate
+      - secret handling policy
+
+  - id: audit-engineer
+    role: Audit & Observability Engineer
+    owns: [T-302, T-303]
+    deliverables:
+      - append-only audit log
+      - LangSmith/Langfuse trace
+      - decision trace export
+
+  - id: frontend-demo-engineer
+    role: Demo UI Engineer
+    owns: [T-301]
+    deliverables:
+      - Chainlit/Streamlit UI
+      - step-by-step workflow display
+      - final report screen
+
+  - id: qa-eval-engineer
+    role: QA / Eval Engineer
+    owns: [T-305, T-401, T-403, T-404]
+    deliverables:
+      - unit/integration/e2e tests
+      - RAG/citation evals
+      - smoke test report
+
+  - id: red-team-engineer
+    role: Red Team Engineer
+    owns: [T-402]
+    deliverables:
+      - prompt injection cases
+      - fake citation cases
+      - PII leakage cases
+
+  - id: demo-director
+    role: Demo Director
+    owns: [T-405, T-406]
+    deliverables:
+      - 5-minute demo script
+      - architecture diagram
+      - judge-facing story line
+
+  - id: performance-engineer
+    role: Performance / AgentCompiler Engineer
+    owns: [T-501, T-502, T-503, T-706]
+    deliverables:
+      - AgentCompiler feasibility report (deferred Phase 5+)
+      - latency/cost benchmark
+      - baseline fallback plan
+      - 비용 budget guard (P2)
+    model_tier: standard  # 일반 측정 작업 — sonnet으로 충분
+
+  # === Phase 6+ Self-Evolving Infrastructure 역할 (2026-05-13 추가) ===
+
+  - id: router-engineer
+    role: Request Router Engineer (Phase 6, P1)
+    owns: [T-601, T-602, T-603, T-604, T-605]
+    deliverables:
+      - .cs-brain/routing-table.yaml (8 domain + 3 pipeline)
+      - src/compliance_sentinel/router.py
+      - compliance-sentinel router CLI 통합
+      - routing_history.log 7-col TSV writer
+      - router 단위 테스트 6-8건
+    model_tier: shallow  # 결정론적 CLI — LLM 호출 없음
+
+  - id: model-router-engineer
+    role: Model Router Engineer (Phase 7, P2)
+    owns: [T-701, T-704, T-705]
+    deliverables:
+      - scripts/model_router.py (4-tier 매트릭스)
+      - Codex cross-model verifier 자동 부착
+      - agent-model-guard (LP-CS-030 hard pin)
+    model_tier: deep  # 결정 로직 추론 깊이 필요
+
+  - id: brain-curator
+    role: Brain Curator (Phase 8, P3, Self-Evolving)
+    owns: [T-801, T-802, T-803, T-804, T-805, T-806]
+    deliverables:
+      - .cs-brain/ schema (project_brain.yaml + pending_patterns.yaml + routing_history.log)
+      - scripts/cs_capture_learning.py (4 분류)
+      - scripts/cs_search_patterns.py (BM25 + BGE-M3 RRF)
+      - scripts/cs_history_analyzer.py (top LP, similar queries)
+      - scripts/cs_ablation_report.py (주간 측정)
+      - Stop hook auto-merge (readonly 보호)
+    model_tier: standard  # 패턴 분석 + 임베딩, LLM 호출 최소
+
+  - id: cross-model-verifier
+    role: Cross-Model Verifier (Phase 7, P2, Codex GPT-5.5)
+    owns: [T-704]
+    deliverables:
+      - critical 작업 100% 부착 정책
+      - Codex 호출 wrapper + budget guard
+      - cross_model_verifier_attach_rate 모니터링
+    model_tier: critical  # Codex GPT-5.5
+    isolation_required: true  # Builder가 절대 verifier 역할 못 함
+
+  - id: observability-engineer
+    role: Observability Engineer (Phase 9, P4)
+    owns: [T-902]
+    deliverables:
+      - LangSmith / Phoenix trace export
+      - 8-layer 보안 layer별 측정 지표
+      - 비용 dashboard
+    model_tier: shallow  # 측정 도구 wiring
+
+  - id: safety-engineer
+    role: Safety Engineer (Phase 9, P4)
+    owns: [T-907, T-908]
+    deliverables:
+      - NeMo Guardrails (또는 동등) 통합
+      - "법률 자문 아님" disclaim 강제
+      - CONFIDENCE 5등급 출력 경로 활성
+    model_tier: standard
+
+communication_rules:
+  - 모든 task 결과는 handoff/delegation-board.md에 기록한다.
+  - verifier 실패는 숨기지 않고 blocker로 표시한다.
+  - 법령/보안 관련 불확실성은 human review로 에스컬레이션한다.
+  - AgentCompiler는 baseline MVP 통과 전 핵심 경로에 넣지 않는다 (Phase 5+ deferred).
+  - **Builder ≠ Verifier 격리는 절대 우회 금지** — 같은 모델이라도 별도 system prompt + 컨텍스트.
+  - **CEO Synthesizer 모델 다운그레이드 금지** — Opus 4.7 hard pin (LP-CS-030).
+  - **readonly 패턴은 자동 학습으로 덮어쓰지 않는다** — 법무팀 승인 패턴 보호.
+  - **critical 작업은 cross-model Codex verifier 자동 부착** — opt-out 불가, opt-in만 허용.
+
+model_routing_summary:
+  # workflows/cs-model-routing.yaml single source 참조
+  shallow:  [router-engineer, observability-engineer]
+  standard: [board_members(6), reviewer, brain-curator, safety-engineer, performance-engineer]
+  deep:     [model-router-engineer, ceo-synthesizer, verifier, orchestrator]
+  critical: [cross-model-verifier]  # Codex GPT-5.5

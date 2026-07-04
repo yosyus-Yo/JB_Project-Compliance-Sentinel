@@ -1,0 +1,194 @@
+schema_version: cs-routing-table/v1
+# JB Compliance Sentinel Routing Table
+# SEAS .opencode/routing-table.yaml 패턴 차용 — 8 domain + 3 pipeline로 압축.
+
+domains:
+  # 우선순위 순 (먼저 매칭되는 것 채택)
+
+  pr_review:
+    patterns:
+      - 'pull request|PR\s*#?\d+|pr 리뷰|pull request review'
+    default_workflow: cs-evolve
+    default_options: ['--with-review']
+    reason: PR 리뷰는 최우선 (코드 변경 동반)
+
+  policy_change:
+    patterns:
+      - 정책 변경|법령 개정|시행일|새 법령|개정안|개정 안내|규정 신설
+    default_workflow: cs-research
+    default_options: []
+    reason: 법령 변경은 research 우선 — board 진입 전 컨텍스트 확보
+
+  law_question:
+    patterns:
+      - PIPA|개인정보보호법|신용정보법|금소법|금융소비자보호법|전금법|전자금융감독규정|자본시장법|법령이|법령은|조항이|조항은
+      - 어떤 법|어느 법|관련 법|적용 법|법적 근거
+    default_workflow: cs-research
+    default_options: []
+    reason: 법령 질의는 research (검토가 아닌 조회)
+
+  bulk_audit:
+    patterns:
+      - 일괄|배치|다수|전수 검토|상품 \d+개|전체 약관|모든 계열사
+    default_workflow: cs-evolve-loop
+    default_options: ['--batch']
+    reason: 대량 검토는 loop 모드 (자율 반복)
+
+  transaction:
+    patterns:
+      - 거래|송금|입금|출금|이체|AML|자금세탁|자금 세탁|CFT|테러자금|의심 거래|이상 거래
+    default_workflow: cs-evolve
+    default_options: ['--strict']
+    reason: 거래 시나리오는 high 기본 (AML/CFT 영역)
+
+  contract_review:
+    patterns:
+      - 계약서|계약 조항|해지 조항|손해배상|위약금|채무|책임 분담
+    default_workflow: cs-evolve
+    default_options: []
+
+  ad_review:
+    patterns:
+      - 광고|마케팅 문구|캠페인|이벤트|혜택|프로모션|배너|랜딩|랜딩 페이지
+      - guaranteed|zero risk|return|profit|everyone|loan approved|promotion|campaign|cashback
+      - 零风险|保证收益|所有客户|元本保証|必ず利益|全員|không rủi ro|lợi nhuận|được duyệt|tanpa risiko|untung pasti|disetujui
+    default_workflow: cs-evolve
+    default_options: []
+
+  terms_review:
+    patterns:
+      - 약관|동의서|가입 조건|가입 약관|이용 약관|고객 동의|개인정보 처리방침
+    default_workflow: cs-evolve
+    default_options: []
+
+# 복잡도 (키워드 매칭 first-match)
+complexity:
+  simple:
+    keywords:
+      - 한 줄
+      - 단일 문구
+      - 빠른 점검
+      - 짧은
+  medium:
+    keywords:
+      - 한 건
+      - 약관 1건
+      - 광고 1건
+      - 단일 약관
+      - 단일 광고
+    default: true
+  complex:
+    keywords:
+      - 전체 약관
+      - 다중 조항
+      - cross 법령
+      - 여러 법령
+      - 다중 계약
+  massive:
+    keywords:
+      - 전체 상품
+      - 모든 계열사
+      - 정책 전환
+      - 전사 적용
+
+# 품질 등급 (보안/규제 키워드 critical)
+quality:
+  critical:
+    keywords:
+      - 결제
+      - 인증
+      - 카드
+      - 비밀번호
+      - OTP
+      - 패스워드
+      - AML
+      - 자금세탁
+      - CFT
+      - 테러자금
+      - 미성년자
+      - 청소년
+      - 만 14세
+      - 신용평가
+      - 신용점수
+      - 신용정보
+      - 출시 임박
+      - 마감 임박
+  high:
+    keywords:
+      - 출시 예정
+      - 고객 노출
+      - 마케팅 캠페인
+      - 핵심
+      - 중요
+  standard:
+    default: true
+
+# 협업 모드
+collaboration:
+  team_required:
+    keywords:
+      - 팀 검토
+      - 다중 관점
+      - 보드 검토
+      - 6인
+  sandbox_isolation:
+    keywords:
+      - 격리
+      - 샌드박스
+      - 안전 실행
+  solo:
+    default: true
+
+# 자동화 모드
+automation:
+  loop:
+    keywords:
+      - 반복
+      - 일괄
+      - 배치
+      - 자율
+  standard:
+    default: true
+
+# 파이프라인 (multi-step)
+pipelines:
+  policy_change_full:
+    patterns:
+      - 법령 개정.*검토.*반영|시행일.*반영|새 법령.*적용
+    steps:
+      - {workflow: cs-research, options: []}
+      - {workflow: cs-evolve-loop, options: ['--batch']}
+      - {workflow: cs-cso, options: []}
+    reason: 법령 변경 → 리서치 → 일괄 약관 검토 → 보안/PII 감사
+
+  bulk_audit_pipeline:
+    patterns:
+      - 상품 \d+개.*검토|전체 약관.*일괄|모든 계열사.*점검
+    steps:
+      - {workflow: cs-research, options: []}
+      - {workflow: cs-evolve-loop, options: ['--batch']}
+    reason: 대량 검토는 리서치 후 자율 반복
+
+  research_then_review:
+    patterns:
+      - 조사.*후.*검토|분석.*하고.*검토|연구.*후.*판단
+    steps:
+      - {workflow: cs-research, options: []}
+      - {workflow: cs-evolve, options: []}
+    reason: 리서치 후 단일 검토
+
+# Disambiguation (2+ 도메인 동시 매칭)
+known_ambiguities:
+  - input_keywords: [약관, 광고]
+    decision_rule: "광고가 약관에 포함된 문맥이면 ad_review, 아니면 terms_review"
+
+  - input_keywords: [거래, 약관]
+    decision_rule: "거래 시나리오 자체 검토면 transaction, 거래 약관 검토면 contract_review"
+
+# 우선순위 (override 우선)
+priority:
+  - domain: critical_override
+    condition: "quality == 'critical'"
+    action: "추가 옵션: --strict --adversarial. 단 --with-judge/--verifier-stack은 cs-evolve 계열만"
+
+# Single source of truth — 다른 곳에서 참조만, 본 yaml만 권한

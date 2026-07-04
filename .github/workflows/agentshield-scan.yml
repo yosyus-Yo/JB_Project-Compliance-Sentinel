@@ -1,0 +1,83 @@
+name: AgentShield Security Gate
+
+# Blocking security gate: every PR / push is scanned by the sibling AgentShield
+# security compiler. The build FAILS when the scan status is FAIL (CRITICAL/HIGH
+# findings); MEDIUM/LOW findings are reported as SARIF to the Security tab but do
+# not block. This closes the "scan exists but is never enforced in CI" gap.
+#
+# Sibling-repo aware: when AgentShield is not accessible (e.g. it is a private repo
+# and no read PAT is configured in repo secrets), the scan is skipped with a warning
+# and the gate passes non-blocking instead of failing the whole pipeline. Configure
+# the AGENTSHIELD_READ_TOKEN secret to enable the blocking scan.
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write  # upload SARIF to GitHub code scanning
+
+jobs:
+  agentshield-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Compliance-Sentinel
+        uses: actions/checkout@v4
+        with:
+          path: jb
+
+      - name: Checkout AgentShield (security compiler)
+        id: checkout_shield
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: Aithor-organization/AgentShield
+          path: AgentShield
+          # Private AgentShield needs a read PAT in repo secrets (AGENTSHIELD_READ_TOKEN).
+          # Falls back to the default token; when checkout fails the gate skips (below).
+          token: ${{ secrets.AGENTSHIELD_READ_TOKEN || github.token }}
+
+      - name: Check AgentShield availability
+        id: shield_avail
+        run: |
+          if [ -d "${{ github.workspace }}/AgentShield/src" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::AgentShield repo not accessible (set AGENTSHIELD_READ_TOKEN secret to enable the blocking scan) — security scan skipped, gate passes non-blocking."
+          fi
+
+      - name: Set up Python
+        if: steps.shield_avail.outputs.available == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run AgentShield scan (blocking on FAIL status)
+        if: steps.shield_avail.outputs.available == 'true'
+        env:
+          AGENTSHIELD_ROOT: ${{ github.workspace }}/AgentShield
+        run: |
+          cd "${{ github.workspace }}/AgentShield"
+          PYTHONPATH=src python -m agent_shield.cli scan \
+            --target "${{ github.workspace }}/jb" \
+            --policy "${{ github.workspace }}/jb/.agentshield/policy.yaml" \
+            --out "${{ github.workspace }}/scan-report" \
+            --fail-on-status
+
+      - name: Upload SARIF to code scanning
+        if: ${{ always() && steps.shield_avail.outputs.available == 'true' }}
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ github.workspace }}/scan-report/agent_shield_report.sarif
+          category: agentshield
+
+      - name: Archive full report
+        if: ${{ always() && steps.shield_avail.outputs.available == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentshield-report
+          path: ${{ github.workspace }}/scan-report/

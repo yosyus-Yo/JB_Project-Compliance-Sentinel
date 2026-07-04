@@ -1,0 +1,189 @@
+# Law Targets — KB 100+ Ingest 대상 정의
+#
+# spec/kb-ingest-100plus.md §5 + tasks KB-001~KB-006 산출물.
+# 본 yaml은 `cs-knowledge-ingest --laws data/law_targets.yaml --merge` 배치 입력.
+# 105 entries (target 100 + buffer 5). 각 entry는 LawOpenApiClient로 article body fetch.
+#
+# 스키마:
+#   - law_name:      str        # 법령명 (한글 정식 명칭)
+#     article_no:    str        # 조문 번호 (e.g. "13", "13의2", "*"=ingest 시 결정)
+#     source_type:   str        # official_or_external | internal_standard
+#     priority:      str        # P0 | P1 | P2
+#     source_url:    str (옵션)  # 명시 시 그대로 사용. 미지정 시 LawOpenApiClient가 생성
+#     topic:         str (옵션)  # ingest 우선순위 라벨 (e.g. "광고규제", "동의")
+#
+# source_type 추론 (knowledge_base.article_provenance):
+#   - source_url에 law.go.kr / fsc.go.kr / fss.or.kr / pipc.go.kr 포함 → official_or_external
+#   - source_url이 local:// 시작 → internal_standard
+
+version: 1
+generated_at: "2026-05-16"
+target_total: 105
+breakdown:
+  official_or_external: 76   # 70 + 6 buffer
+  internal_standard: 26
+  external_standard: 3
+
+# ============================================================
+# Section 1 — 공식 법령 (official_or_external, target 70+)
+# ============================================================
+
+# 1.1 금융소비자보호법 (P0, 20건)
+#     광고/설명/부당권유/적합성 — PDF "위반 가능성" 직접 대응
+official_financial_consumer:
+  - {law_name: "금융소비자보호법", article_no: "13", priority: P0, topic: "광고 규제"}
+  - {law_name: "금융소비자보호법", article_no: "17", priority: P0, topic: "적합성 원칙"}
+  - {law_name: "금융소비자보호법", article_no: "18", priority: P0, topic: "적정성 원칙"}
+  - {law_name: "금융소비자보호법", article_no: "19", priority: P0, topic: "설명의무"}
+  - {law_name: "금융소비자보호법", article_no: "20", priority: P0, topic: "불공정영업"}
+  - {law_name: "금융소비자보호법", article_no: "21", priority: P0, topic: "부당권유"}
+  - {law_name: "금융소비자보호법", article_no: "22", priority: P0, topic: "광고규제"}
+  - {law_name: "금융소비자보호법", article_no: "23", priority: P1, topic: "계약서류 교부"}
+  - {law_name: "금융소비자보호법", article_no: "24", priority: P1, topic: "대리·중개 등록"}
+  - {law_name: "금융소비자보호법", article_no: "25", priority: P1, topic: "대리·중개 의무"}
+  - {law_name: "금융소비자보호법", article_no: "26", priority: P1, topic: "대리·중개 손해배상"}
+  - {law_name: "금융소비자보호법", article_no: "27", priority: P1, topic: "자문업 등록"}
+  - {law_name: "금융소비자보호법", article_no: "28", priority: P1, topic: "자문업 의무"}
+  - {law_name: "금융소비자보호법", article_no: "29", priority: P2, topic: "내부통제기준"}
+  - {law_name: "금융소비자보호법", article_no: "32", priority: P1, topic: "분쟁조정"}
+  - {law_name: "금융소비자보호법", article_no: "44", priority: P0, topic: "징벌적 손해배상"}
+  - {law_name: "금융소비자보호법", article_no: "45", priority: P0, topic: "위법계약해지권"}
+  - {law_name: "금융소비자보호법", article_no: "47", priority: P1, topic: "자료열람"}
+  - {law_name: "금융소비자보호법", article_no: "48", priority: P1, topic: "처분 등"}
+  - {law_name: "금융소비자보호법", article_no: "57", priority: P2, topic: "과징금"}
+
+# 1.2 자본시장과 금융투자업에 관한 법률 (P0, 10건)
+official_capital_market:
+  - {law_name: "자본시장과 금융투자업에 관한 법률", article_no: "47", priority: P0, topic: "설명의무"}
+  - {law_name: "자본시장과 금융투자업에 관한 법률", article_no: "49", priority: P0, topic: "부당권유 금지"}
+  - {law_name: "자본시장과 금융투자업에 관한 법률", article_no: "57", priority: P0, topic: "투자광고"}
+  - {law_name: "자본시장과 금융투자업에 관한 법률", article_no: "71", priority: P1, topic: "불공정영업"}
+  - {law_name: "자본시장과 금융투자업에 관한 법률", article_no: "85", priority: P1, topic: "집합투자 광고"}
+  - {law_name: "자본시장과 금융투자업에 관한 법률", article_no: "124", priority: P1, topic: "발행 광고"}
+  - {law_name: "자본시장과 금융투자업에 관한 법률", article_no: "176", priority: P0, topic: "시세조종 금지"}
+  - {law_name: "자본시장과 금융투자업에 관한 법률", article_no: "178", priority: P0, topic: "부정거래 금지"}
+  - {law_name: "자본시장과 금융투자업에 관한 법률", article_no: "443", priority: P1, topic: "벌칙"}
+  - {law_name: "자본시장과 금융투자업에 관한 법률", article_no: "445", priority: P2, topic: "양벌규정"}
+
+# 1.3 표시·광고의 공정화에 관한 법률 (P0, 8건)
+official_fair_advertising:
+  - {law_name: "표시·광고의 공정화에 관한 법률", article_no: "3", priority: P0, topic: "부당한 표시·광고 금지"}
+  - {law_name: "표시·광고의 공정화에 관한 법률", article_no: "4", priority: P0, topic: "중요정보 고시"}
+  - {law_name: "표시·광고의 공정화에 관한 법률", article_no: "5", priority: P1, topic: "실증의무"}
+  - {law_name: "표시·광고의 공정화에 관한 법률", article_no: "6", priority: P1, topic: "자율심의"}
+  - {law_name: "표시·광고의 공정화에 관한 법률", article_no: "7", priority: P1, topic: "임시중지명령"}
+  - {law_name: "표시·광고의 공정화에 관한 법률", article_no: "8", priority: P1, topic: "시정조치"}
+  - {law_name: "표시·광고의 공정화에 관한 법률", article_no: "9", priority: P2, topic: "과징금"}
+  - {law_name: "표시·광고의 공정화에 관한 법률", article_no: "10", priority: P2, topic: "손해배상"}
+
+# 1.4 개인정보보호법 (P0, 12건)
+official_pipa:
+  - {law_name: "개인정보보호법", article_no: "15", priority: P0, topic: "수집·이용"}
+  - {law_name: "개인정보보호법", article_no: "16", priority: P0, topic: "수집 제한"}
+  - {law_name: "개인정보보호법", article_no: "17", priority: P0, topic: "제3자 제공"}
+  - {law_name: "개인정보보호법", article_no: "18", priority: P0, topic: "목적 외 이용·제공 제한"}
+  - {law_name: "개인정보보호법", article_no: "19", priority: P1, topic: "제공받은 자의 이용"}
+  - {law_name: "개인정보보호법", article_no: "20", priority: P1, topic: "정보주체 이외 수집 시 고지"}
+  - {law_name: "개인정보보호법", article_no: "22", priority: P0, topic: "동의 받는 방법"}
+  - {law_name: "개인정보보호법", article_no: "23", priority: P0, topic: "민감정보 처리 제한"}
+  - {law_name: "개인정보보호법", article_no: "24", priority: P0, topic: "고유식별정보 처리 제한"}
+  - {law_name: "개인정보보호법", article_no: "28-2", priority: P0, topic: "가명정보 처리"}
+  - {law_name: "개인정보보호법", article_no: "29", priority: P1, topic: "안전조치"}
+  - {law_name: "개인정보보호법", article_no: "30", priority: P1, topic: "개인정보 처리방침"}
+
+# 1.5 신용정보의 이용 및 보호에 관한 법률 (P1, 10건)
+official_credit_info:
+  - {law_name: "신용정보의 이용 및 보호에 관한 법률", article_no: "15", priority: P0, topic: "신용정보 수집"}
+  - {law_name: "신용정보의 이용 및 보호에 관한 법률", article_no: "17", priority: P0, topic: "위탁"}
+  - {law_name: "신용정보의 이용 및 보호에 관한 법률", article_no: "18", priority: P0, topic: "신용정보 정확성"}
+  - {law_name: "신용정보의 이용 및 보호에 관한 법률", article_no: "19", priority: P0, topic: "안전성"}
+  - {law_name: "신용정보의 이용 및 보호에 관한 법률", article_no: "20", priority: P1, topic: "관리·보호"}
+  - {law_name: "신용정보의 이용 및 보호에 관한 법률", article_no: "32", priority: P0, topic: "제공·이용 동의"}
+  - {law_name: "신용정보의 이용 및 보호에 관한 법률", article_no: "33", priority: P0, topic: "개인신용정보 이용"}
+  - {law_name: "신용정보의 이용 및 보호에 관한 법률", article_no: "34", priority: P1, topic: "제공·이용 통지"}
+  - {law_name: "신용정보의 이용 및 보호에 관한 법률", article_no: "35", priority: P1, topic: "정보 열람청구"}
+  - {law_name: "신용정보의 이용 및 보호에 관한 법률", article_no: "40", priority: P2, topic: "벌칙"}
+
+# 1.6 은행법 (P1, 5건)
+official_bank_act:
+  - {law_name: "은행법", article_no: "52-2", priority: P0, topic: "약관 명시·교부"}
+  - {law_name: "은행법", article_no: "52-3", priority: P0, topic: "예금 광고"}
+  - {law_name: "은행법", article_no: "52-4", priority: P1, topic: "여신 광고"}
+  - {law_name: "은행법", article_no: "53", priority: P1, topic: "감독"}
+  - {law_name: "은행법", article_no: "65", priority: P2, topic: "과태료"}
+
+# 1.7 보험업법 (P1, 5건)
+official_insurance:
+  - {law_name: "보험업법", article_no: "95", priority: P0, topic: "보험 모집광고"}
+  - {law_name: "보험업법", article_no: "95-2", priority: P0, topic: "광고 사전심의"}
+  - {law_name: "보험업법", article_no: "95-4", priority: P1, topic: "특별이익 제공 금지"}
+  - {law_name: "보험업법", article_no: "97", priority: P1, topic: "보험모집 준수사항"}
+  - {law_name: "보험업법", article_no: "209", priority: P2, topic: "과태료"}
+
+# Section 1 buffer (P2, 6건) — Phase B 응답 누락 보완용
+official_buffer:
+  - {law_name: "전자금융거래법", article_no: "21", priority: P2, topic: "안전성 확보"}
+  - {law_name: "전자금융거래법", article_no: "21-2", priority: P2, topic: "정보보호최고책임자"}
+  - {law_name: "전자금융감독규정", article_no: "11", priority: P2, topic: "전자적 침해 대응"}
+  - {law_name: "자본시장과 금융투자업에 관한 법률 시행령", article_no: "10", priority: P2, topic: "투자권유 세부"}
+  - {law_name: "개인정보보호법 시행령", article_no: "17", priority: P2, topic: "민감정보 범위"}
+  - {law_name: "금융소비자보호법 시행령", article_no: "17", priority: P2, topic: "광고 세부기준"}
+
+# ============================================================
+# Section 2 — 내부 기준 (internal_standard, target 26)
+# ============================================================
+#
+# source_url prefix `local://` 로 시작해야 internal_standard로 분류됨.
+# 실제 문서는 data/internal_standards/*.md 또는 docs/jb-internal/*.md에 보관.
+# Phase C에서 cs-knowledge-ingest --document <file> --source-type internal_standard 배치 실행.
+
+internal_jb_marketing:
+  - {law_name: "JB 마케팅 콘텐츠 심의 기준", article_no: "1", priority: P0, topic: "광고 표현 금지목록"}
+  - {law_name: "JB 마케팅 콘텐츠 심의 기준", article_no: "2", priority: P0, topic: "필수 고지문"}
+  - {law_name: "JB 마케팅 콘텐츠 심의 기준", article_no: "3", priority: P0, topic: "약관 인용 규칙"}
+  - {law_name: "JB 마케팅 콘텐츠 심의 기준", article_no: "4", priority: P1, topic: "데모 시연 디스클레이머"}
+  - {law_name: "JB 마케팅 콘텐츠 심의 기준", article_no: "5", priority: P1, topic: "이미지/영상 OCR 검토 절차"}
+  - {law_name: "JB 다국어 콘텐츠 가이드", article_no: "1", priority: P1, topic: "5개 외국어 표현 정합성"}
+  - {law_name: "JB 다국어 콘텐츠 가이드", article_no: "2", priority: P1, topic: "문화 적합성 체크리스트"}
+  - {law_name: "JB 다국어 콘텐츠 가이드", article_no: "3", priority: P2, topic: "번역 위탁 절차"}
+
+internal_fsc_guidelines:
+  - {law_name: "금융위 금융광고규제 가이드라인", article_no: "1", priority: P0, topic: "광고 표현 일반 원칙"}
+  - {law_name: "금융위 금융광고규제 가이드라인", article_no: "2", priority: P0, topic: "허위·과장 표현"}
+  - {law_name: "금융위 금융광고규제 가이드라인", article_no: "3", priority: P0, topic: "수익률 표시"}
+  - {law_name: "금융위 금융광고규제 가이드라인", article_no: "4", priority: P0, topic: "위험 고지"}
+  - {law_name: "금융위 금융광고규제 가이드라인", article_no: "5", priority: P1, topic: "비교광고"}
+  - {law_name: "금융위 금융광고규제 가이드라인", article_no: "6", priority: P1, topic: "추천·후기"}
+  - {law_name: "금융위 금융광고규제 가이드라인", article_no: "7", priority: P1, topic: "이벤트·경품"}
+  - {law_name: "금융위 금융광고규제 가이드라인", article_no: "8", priority: P1, topic: "소셜미디어 광고"}
+  - {law_name: "금융위 금융광고규제 가이드라인", article_no: "9", priority: P2, topic: "인플루언서 협찬"}
+  - {law_name: "금감원 금융소비자보호 표준", article_no: "1", priority: P0, topic: "적합성 점검표"}
+  - {law_name: "금감원 금융소비자보호 표준", article_no: "2", priority: P0, topic: "설명서 표준 양식"}
+  - {law_name: "금감원 금융소비자보호 표준", article_no: "3", priority: P1, topic: "약관 변경 안내"}
+  - {law_name: "금감원 금융소비자보호 표준", article_no: "4", priority: P1, topic: "민원 처리 절차"}
+  - {law_name: "금감원 금융소비자보호 표준", article_no: "5", priority: P1, topic: "취약계층 보호"}
+  - {law_name: "금감원 금융소비자보호 표준", article_no: "6", priority: P2, topic: "고령자 응대 매뉴얼"}
+  - {law_name: "금감원 금융소비자보호 표준", article_no: "7", priority: P2, topic: "장애인 접근성"}
+  - {law_name: "금감원 금융소비자보호 표준", article_no: "8", priority: P2, topic: "다문화 응대"}
+  - {law_name: "금감원 금융소비자보호 표준", article_no: "9", priority: P2, topic: "디지털 채널 응대 (buffer)"}
+
+# ============================================================
+# Section 3 — 외부 표준 (official_or_external, 3건)
+# ============================================================
+
+external_standards:
+  - {law_name: "KIDI 보험상품 광고 표준", article_no: "1", priority: P1, topic: "보험상품 광고 표준 일반"}
+  - {law_name: "KIDI 보험상품 광고 표준", article_no: "2", priority: P1, topic: "보장내용 표시 기준"}
+  - {law_name: "은행연합회 자율규제", article_no: "1", priority: P1, topic: "광고 자율심의"}
+
+# ============================================================
+# Acceptance check (KB Phase D 검증용 — Definition of Done)
+# ============================================================
+acceptance:
+  AC_KB_001: "article_count >= 100 (target 105)"
+  AC_KB_002: "stale_articles == 0 (last_verified_at = today() backfill)"
+  AC_KB_003: "unverified_articles == 0 (status_verified=True 모든 항목)"
+  AC_KB_004: "production_ready == True"
+  AC_KB_005: "official_or_external_count >= 70 AND internal_standard_count >= 20"
+  AC_KB_006: "기존 102+ tests 전부 회귀 없이 통과"
+  AC_KB_007: "모든 article의 source_url 존재"

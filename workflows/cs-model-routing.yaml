@@ -1,0 +1,123 @@
+schema_version: cs-model-routing/v3
+name: cs-model-router-openai-only-mini-nano-gpt55
+purpose: OpenAI 계열 gpt-5.5 / gpt-5.4-mini / gpt-5.4-nano만 사용한다. 비critical 주 작업과 검증은 mini로 낮추고, critical/cross-model 검증만 gpt-5.5로 격리한다.
+
+tiers:
+  shallow:
+    model: gpt-5.4-nano
+    effort: none
+    cost_multiplier: 0.04
+    use_cases:
+      - classifier (입력 5축 분류)
+      - documenter (마크다운 렌더링, 보고서 포맷)
+      - explore (KB 탐색, 키워드 검색)
+
+  standard:
+    model: gpt-5.4-mini
+    effort: none
+    cost_multiplier: 0.15
+    use_cases:
+      - board_member (품질 유지와 빠른 6인 보드 초안)
+      - ceo_synthesizer (비critical 최종 판단 메모)
+      - verifier (비critical 격리 검증)
+      - reviewer_draft (BUILD 후 빠른 초벌 리뷰)
+
+  deep:
+    model: gpt-5.5
+    effort: none
+    cost_multiplier: 1.0
+    use_cases:
+      - orchestrator (Hierarchical 패턴 조율)
+      - complex_reasoning (복잡한 법령/약관 판단)
+
+  critical:
+    model: gpt-5.5
+    effort: none
+    cost_multiplier: 1.0
+    validation_stack:
+      enabled: true
+      model: gpt-5.5
+      effort: none
+    use_cases:
+      - payment_review (결제 약관)
+      - aml_cft_review (자금세탁/테러자금조달 거래)
+      - minor_protection (미성년자 보호)
+      - credit_assessment (신용평가)
+
+  # 명시적 격리: 같은 provider라도 Builder ≠ Verifier는 다른 system prompt + 다른 context
+  isolation:
+    builder_system_prompt: "system_prompts/builder.md"
+    verifier_system_prompt: "system_prompts/verifier.md"
+    ceo_system_prompt: "system_prompts/ceo_synthesizer.md"
+    independent_validator_system_prompt: "system_prompts/codex_verifier.md"
+
+validation_roles:
+  quality_first_runtime_escalation:
+    trigger: deterministic_review_risk in [HIGH, CRITICAL]
+    model: gpt-5.5
+    effort: none
+    roles:
+      - ceo_synthesizer
+      - verifier
+      - adversarial_critic
+      - independent_validator
+    preserves:
+      classifier: gpt-5.4-nano
+      documenter: gpt-5.4-nano
+      board_members: gpt-5.4-mini
+  verifier:
+    model: gpt-5.4-mini
+    effort: none
+    critical_model: gpt-5.5
+  adversarial_critic:
+    model: gpt-5.4-mini
+    effort: none
+    critical_model: gpt-5.5
+  independent_validator:
+    model: gpt-5.4-mini
+    effort: none
+    critical_model: gpt-5.5
+
+# 자동 부착 규칙 — critical에서는 gpt-5.5 독립 검증을 STRONG으로 자동 부착
+cross_model_attach_rules:
+  - quality: critical
+    complexity: any
+    domain: any
+    level: STRONG
+    auto_attach: true
+    model: gpt-5.5
+    effort: none
+    reason: "critical 작업은 primary context와 분리된 gpt-5.5 비평/독립 검증 필수"
+
+  - quality: non-critical
+    complexity: complex
+    domain: [terms_review, ad_review, contract_review]
+    level: ADVISORY
+    auto_attach: false
+    model: gpt-5.5
+    effort: none
+    reason: "complex 영역에 사용자 결정권 부여"
+
+# 비용 budget
+budget_guards:
+  per_demo: 0.40  # USD, 시연 1회
+  per_batch_100: 20.00
+  monthly_dev: 80.00
+
+# Deterministic fallback
+fallback:
+  enabled: true
+  env_var: CS_DETERMINISTIC_MODE
+  description: "환경변수 CS_DETERMINISTIC_MODE=1 시 모든 LLM 호출 차단, deterministic board만 사용"
+
+# 모니터링
+monitoring:
+  hard_pin_violations: critical  # LP-CS-030 alert
+  budget_overrun: warning
+  validation_attach_rate: weekly  # critical 시 100% 목표
+
+fixed_env_routes:
+  shallow: CS_MODEL_SHALLOW=gpt-5.4-nano
+  standard: CS_MODEL_STANDARD=gpt-5.4-mini
+  deep: CS_MODEL_DEEP=gpt-5.5
+  critic: CS_MODEL_CRITIC=gpt-5.5

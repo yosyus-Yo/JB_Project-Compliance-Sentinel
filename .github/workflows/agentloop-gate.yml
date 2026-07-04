@@ -1,0 +1,97 @@
+name: AgentLoop Maintenance Gate
+
+# Lifecycle maintenance gate: every PR / push runs the sibling AgentLoop
+# maintenance compiler over Compliance Sentinel to detect drift / regression /
+# cost / latency / dependency / staleness issues and emit a runtime action
+# (promote / pause_canary / block / rollback). This closes the "AgentLoop gate
+# exists locally but is never enforced in CI" gap (only AgentShield was wired).
+#
+# CURRENT MODE: blocking (single converged gate).
+#   The gate runs the golden-set regression (함정5), feeds it to AgentLoop's
+#   judgePass via jb.js, and activates trajectory (함정2) + single-request budget
+#   (함정3) passes from measured audit signals. The build FAILS (exit 2) on a
+#   block/rollback runtime action OR any golden-set regression (case-level).
+#
+# Sibling-repo aware: when AgentLoop is not accessible (e.g. it is a private repo
+# and no read PAT is configured), the AgentLoop maintenance gate is skipped with a
+# warning, but the golden-set regression unit tests still run as a blocking check —
+# so 함정5 (silent regression) stays enforced even without the sibling compiler.
+# Configure the AGENTLOOP_READ_TOKEN secret to enable the full maintenance gate.
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  agentloop-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Compliance-Sentinel
+        uses: actions/checkout@v4
+        with:
+          path: jb
+
+      - name: Checkout AgentLoop (maintenance compiler)
+        id: checkout_loop
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: Aithor-organization/AgentLoop
+          path: AgentLoop
+          # Private AgentLoop needs a read PAT in repo secrets (AGENTLOOP_READ_TOKEN).
+          # Falls back to the default token; when checkout fails the gate skips (below).
+          token: ${{ secrets.AGENTLOOP_READ_TOKEN || github.token }}
+
+      - name: Check AgentLoop availability
+        id: loop_avail
+        run: |
+          if [ -d "${{ github.workspace }}/AgentLoop" ] && [ -n "$(ls -A "${{ github.workspace }}/AgentLoop" 2>/dev/null)" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::AgentLoop repo not accessible (set AGENTLOOP_READ_TOKEN secret to enable the maintenance gate) — gate skipped; golden-set regression still enforced below."
+          fi
+
+      - name: Set up Node.js (AgentLoop CLI runtime)
+        if: steps.loop_avail.outputs.available == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Compliance-Sentinel (gate dependencies)
+        working-directory: jb
+        run: |
+          pip install -e .
+          pip install -r requirements.lock
+
+      - name: Run AgentLoop maintenance gate (blocking — golden + judge/trajectory/budget)
+        if: steps.loop_avail.outputs.available == 'true'
+        working-directory: jb
+        env:
+          AGENTLOOP_ROOT: ${{ github.workspace }}/AgentLoop
+          PYTHONPATH: src:scripts
+        run: |
+          python scripts/run_agentloop_gate.py --json --fail-on-block
+
+      - name: Golden-set regression unit tests (blocking — JB-native, no sibling repo)
+        if: always()  # JB 자체 테스트 — AgentLoop 부재와 무관하게 항상 함정5 회귀 방어
+        working-directory: jb
+        run: |
+          PYTHONPATH=src python -m pytest tests/unit/test_golden_regression.py -v
+
+      - name: Archive AgentLoop gate report
+        if: ${{ always() && steps.loop_avail.outputs.available == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentloop-gate-report
+          path: jb/reports/agentloop/

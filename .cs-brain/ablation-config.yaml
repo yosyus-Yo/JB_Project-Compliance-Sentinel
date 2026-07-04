@@ -1,0 +1,52 @@
+schema_version: cs-brain-ablation/v1
+# 측정 대상 feature와 기대 fire 빈도. 주간 ablation-report로 HEALTHY/UNDERUSED/DEAD 판정.
+
+features:
+  - id: router-classify
+    name: "Request Router classify Phase"
+    measurement_source:
+      file: audit_logs/routing_history.log
+      signal: "."   # 모든 line은 1 fire
+    expected_per_week: 10
+
+  - id: router-pipeline-detect
+    name: "Pipeline detection (3-step compositions)"
+    measurement_source:
+      file: audit_logs/routing_history.log
+      signal: "policy_change_full|bulk_audit_pipeline|research_then_review"
+    expected_per_week: 2
+
+  - id: cross-model-attach
+    name: "Cross-model Codex verifier 자동 부착"
+    measurement_source:
+      file: audit_logs/routing_history.log
+      signal: "critical"
+    expected_per_week: 3
+
+  - id: brain-search
+    name: "Brain pattern search (search-patterns 호출)"
+    measurement_source:
+      file: audit_logs/search-hits.log
+      signal: "."
+    expected_per_week: 10
+
+  - id: brain-capture
+    name: "Learning capture (pending_patterns append)"
+    measurement_source:
+      file: .cs-brain/capture.log
+      signal: "."
+    expected_per_week: 3
+
+  - id: brain-merge
+    name: "Brain merge (pending → project_brain)"
+    measurement_source:
+      file: .cs-brain/merge.log
+      signal: "."
+    expected_per_week: 1
+
+  - id: budget-guard-block
+    name: "Budget guard 차단 발동 (예산 초과 시)"
+    measurement_source:
+      file: audit_logs/llm_cost_ledger.jsonl
+      signal: "."
+    expected_per_week: 0  # 정상 운영에서는 거의 발동 안 함

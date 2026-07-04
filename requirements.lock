@@ -1,0 +1,8 @@
+# Minimal deterministic MVP lock for JB Compliance Sentinel.
+# Generated for production governance gates on 2026-05-21.
+# Scope: packages required by the deterministic/tested MVP path in this environment.
+PyYAML==6.0.3
+mcp==1.27.1
+pytest==9.0.3
+typing_extensions==4.14.1
+uvicorn==0.47.0

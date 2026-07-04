@@ -1,0 +1,6 @@
+{
+  "name": "Compliance Sentinel",
+  "description": "금융 마케팅 콘텐츠의 자율 준법심의 및 표현 리스크 검토를 지원하는 AI 에이전트 시스템",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

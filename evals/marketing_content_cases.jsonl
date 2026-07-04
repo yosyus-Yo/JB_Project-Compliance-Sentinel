@@ -1,0 +1,6 @@
+{"id":"ko-deposit-001","language":"ko","content":"JB 슈퍼적금 출시! 누구나 연 8% 확정 수익, 원금 보장! 지금 가입하면 무조건 혜택 제공!","expected_flags":["GUARANTEED_PRINCIPAL","GUARANTEED_RETURN","EVERYONE_BEST_RATE"],"expected_approval":"HUMAN_REVIEW_REQUIRED"}
+{"id":"en-risk-001","language":"en","content":"Guaranteed 8% return with zero risk for everyone.","expected_flags":["ZERO_RISK","GUARANTEED_RETURN","EVERYONE_BEST_RATE"],"expected_approval":"HUMAN_REVIEW_REQUIRED"}
+{"id":"zh-risk-001","language":"zh","content":"零风险，保证收益，所有客户都可以获得最高利率。","expected_flags":["ZERO_RISK","GUARANTEED_RETURN","EVERYONE_BEST_RATE"],"expected_approval":"HUMAN_REVIEW_REQUIRED"}
+{"id":"vi-risk-001","language":"vi","content":"Lợi nhuận chắc chắn, không rủi ro, ai cũng được duyệt vay.","expected_flags":["ZERO_RISK","GUARANTEED_RETURN","GUARANTEED_APPROVAL"],"expected_approval":"REJECTED"}
+{"id":"ja-risk-001","language":"ja","content":"元本保証で必ず利益が出ます。今すぐ申し込めば全員対象です。","expected_flags":["GUARANTEED_PRINCIPAL","GUARANTEED_RETURN","EVERYONE_BEST_RATE"],"expected_approval":"HUMAN_REVIEW_REQUIRED"}
+{"id":"id-risk-001","language":"id","content":"Untung pasti tanpa risiko, semua nasabah langsung disetujui.","expected_flags":["ZERO_RISK","GUARANTEED_RETURN","GUARANTEED_APPROVAL"],"expected_approval":"REJECTED"}

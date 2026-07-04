@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local runtime artifacts
+audit_logs/
+reports/
+.local/
+*.log
+*.tmp
+demo-output.json
+cli-output.json
+
+# Brain transient state (per-machine, runtime mutable)
+.cs-brain/meta-baseline.json
+.cs-brain/pending_patterns.yaml
+
+# Secrets / environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# 외부 거버넌스 툴(AgentShield/AgentLoop/AgentCompiler)은 별도 재사용 IP라 제출 레포에서 제외.
+# 율리는 이들 없이 native 가드(regex + input_guard_detectors.py의 semantic 탐지)로 실시간 동작한다.
+# 로컬에 third_party/가 있으면 bridge가 자동으로 ML/의미 탐지를 추가 위임(progressive enhancement).
+third_party/
+
+# 백업 cruft / 런타임 eval 출력 (per-machine)
+*.bak
+evals/production_failures.jsonl
+
+# 사업 제안서·기능명세서 등 로컬 전용 문서 (public 제출 레포 미포함)
+docs/*.pptx
+docs/*.docx
+docs/윤리_MVP_제안서.pdf
+docs/윤리_기능명세서.pdf
+docs/제출전-점검-및-3tool-통합.md

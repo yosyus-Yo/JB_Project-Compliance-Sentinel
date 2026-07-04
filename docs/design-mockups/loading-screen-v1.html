@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>로딩(처리 중) 화면 시안 — 단계별 결과 chunk 점진 등장</title>
+<!--
+  처리 중 화면 시안. report-screen-v1(forest)과 톤 일관.
+  핵심: 파이프라인 stepper가 실시간 진행 + 각 단계 완료 시 결과 chunk가 그 자리에 점진 등장.
+  ⚠️ 이건 "시각화 데모" — 실제 구현 시 진짜 처리 시간/이벤트에 연동해야 정직 (가짜 지연 금지).
+  실제로 브라우저에서 열면 단계가 순차로 켜지고 chunk가 하나씩 나타납니다 (자동 반복).
+-->
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<style>
+  :root {
+    --forest-700:#0f766e; --forest-800:#0b4f4a; --forest-50:#e4f7f4; --forest-100:#c8efe8;
+    --brass-700:#b45f2a; --brass-50:#fff2e8; --danger:#9f1239; --danger-text:#be123c; --danger-soft:#fff1f2;
+    --ink:#17211f; --muted:#59656b; --bg:#f4f6f5; --line:#e2e8e6; --card:#ffffff;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif; color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased; }
+  header { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:var(--card); border-bottom:1px solid var(--line); }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; }
+  .brand .mark { width:26px; height:26px; border-radius:7px; background:var(--forest-700); display:grid; place-items:center; color:#fff; font-size:14px; }
+  .brand .sub { color:var(--muted); font-weight:500; font-size:12.5px; }
+  .live { display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--forest-700); font-weight:600; }
+  .live .blip { width:8px; height:8px; border-radius:50%; background:var(--forest-700); animation:blip 1s ease-in-out infinite; }
+  @keyframes blip { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+
+  .wrap { max-width:880px; margin:0 auto; padding:28px 24px 60px; }
+  .title { text-align:center; margin-bottom:6px; }
+  .title h2 { font-size:22px; font-weight:800; letter-spacing:-0.01em; }
+  .title p { color:var(--muted); font-size:14px; margin-top:6px; }
+
+  /* 파이프라인 stepper (세로형 — 진행 + chunk 등장 공간) */
+  .pipeline { margin-top:24px; }
+  .pstep { display:flex; gap:14px; padding:0 4px; }
+  .rail { display:flex; flex-direction:column; align-items:center; }
+  .node { width:28px; height:28px; border-radius:50%; display:grid; place-items:center; font-size:13px; flex-shrink:0;
+          border:2px solid var(--line); background:var(--card); color:var(--muted); transition:all .4s; z-index:1; }
+  .line { width:2px; flex:1; background:var(--line); transition:background .4s; min-height:14px; }
+  .pstep.done .node { background:var(--forest-700); border-color:var(--forest-700); color:#fff; }
+  .pstep.done .line { background:var(--forest-700); }
+  .pstep.active .node { border-color:var(--forest-700); color:var(--forest-700); animation:pulse 1.1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(15,118,110,.3)} 50%{box-shadow:0 0 0 6px rgba(15,118,110,0)} }
+  .pstep.pending .node { opacity:.5; }
+
+  .body { flex:1; padding-bottom:14px; }
+  .body .label { font-size:14px; font-weight:600; padding-top:3px; }
+  .pstep.pending .body .label { color:var(--muted); opacity:.6; }
+  .body .status { font-size:12px; color:var(--muted); margin-top:2px; }
+
+  /* 결과 chunk — 점진 등장 */
+  .chunk { margin-top:10px; opacity:0; transform:translateY(12px); transition:opacity .5s ease, transform .5s ease; }
+  .chunk.show { opacity:1; transform:none; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { background:var(--forest-50); color:var(--forest-800); border:1px solid var(--forest-100); border-radius:8px; padding:5px 11px; font-size:12.5px; font-weight:600; }
+  .chip.warn { background:var(--brass-50); color:var(--brass-700); border-color:#f4c7a4; }
+  .note { font-size:13px; color:var(--ink); background:var(--card); border:1px solid var(--line); border-radius:9px; padding:10px 13px; }
+
+  /* 6인 보드 카드 (하나씩 등장) */
+  .board { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .bcard { border:1px solid var(--line); border-radius:9px; padding:10px; background:var(--card);
+           opacity:0; transform:translateY(10px); transition:opacity .45s, transform .45s; }
+  .bcard.show { opacity:1; transform:none; }
+  .bcard .bh { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+  .bcard .who { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; }
+  .bcard .av { width:20px; height:20px; border-radius:50%; background:var(--forest-50); display:grid; place-items:center; font-size:11px; }
+  .bcard p { font-size:11px; color:var(--muted); line-height:1.4; }
+  .tag { font-size:10px; font-weight:700; padding:2px 7px; border-radius:5px; }
+  .tag.reject { background:var(--danger-soft); color:var(--danger-text); }
+  .tag.amend { background:var(--brass-50); color:var(--brass-700); }
+
+  /* 최종 판정 CTA */
+  .verdict { margin-top:18px; background:var(--danger); color:#fff; border-radius:12px; padding:18px 22px;
+             display:flex; align-items:center; justify-content:space-between;
+             opacity:0; transform:translateY(12px); transition:opacity .5s, transform .5s; }
+  .verdict.show { opacity:1; transform:none; }
+  .verdict h3 { font-size:19px; font-weight:800; }
+  .verdict p { font-size:13px; opacity:.9; margin-top:3px; }
+  .verdict .go { background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); color:#fff;
+                 padding:9px 16px; border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="mark">⚖</span> Compliance Sentinel <span class="sub">· 심의 진행 중</span></div>
+    <div class="live"><span class="blip"></span> 실시간 분석 중</div>
+  </header>
+
+  <div class="wrap">
+    <div class="title">
+      <h2>콘텐츠를 심의하고 있습니다</h2>
+      <p>각 단계가 완료되면 결과가 순서대로 나타납니다</p>
+    </div>
+
+    <div class="pipeline" id="pipeline">
+      <!-- 1 입력 -->
+      <div class="pstep" data-step="0">
+        <div class="rail"><div class="node">1</div><div class="line"></div></div>
+        <div class="body"><div class="label">입력 접수</div><div class="status">콘텐츠 수신 완료</div></div>
+      </div>
+      <!-- 2 분류 -->
+      <div class="pstep" data-step="1">
+        <div class="rail"><div class="node">2</div><div class="line"></div></div>
+        <div class="body"><div class="label">콘텐츠 분류</div><div class="status">언어·채널·상품 식별</div>
+          <div class="chunk" data-chunk="1"><div class="chips"><span class="chip">언어: 한국어</span><span class="chip">채널: 배너</span><span class="chip">상품: 예금</span></div></div>
+        </div>
+      </div>
+      <!-- 3 근거검색 -->
+      <div class="pstep" data-step="2">
+        <div class="rail"><div class="node">3</div><div class="line"></div></div>
+        <div class="body"><div class="label">근거 검색</div><div class="status">법령·내부기준 RAG 조회</div>
+          <div class="chunk" data-chunk="2"><div class="note">📚 관련 근거 <strong>3건</strong> 발견 — 금융광고 심의 기준, 예금자보호법 등</div></div>
+        </div>
+      </div>
+      <!-- 4 규칙검사 -->
+      <div class="pstep" data-step="3">
+        <div class="rail"><div class="node">4</div><div class="line"></div></div>
+        <div class="body"><div class="label">규칙 검사</div><div class="status">금지 표현 패턴 매칭</div>
+          <div class="chunk" data-chunk="3"><div class="chips"><span class="chip warn">⚠ "원금 보장"</span><span class="chip warn">⚠ "확정 수익"</span><span class="chip warn">⚠ "누구나"</span></div></div>
+        </div>
+      </div>
+      <!-- 5 6인 보드 -->
+      <div class="pstep" data-step="4">
+        <div class="rail"><div class="node">5</div><div class="line"></div></div>
+        <div class="body"><div class="label">6인 준법 보드</div><div class="status">관점별 다관점 검토</div>
+          <div class="chunk" data-chunk="4">
+            <div class="board">
+              <div class="bcard" data-card="0"><div class="bh"><span class="who"><span class="av">🛡</span>소비자보호</span><span class="tag reject">REJECT</span></div><p>"원금 보장" 소비자 오인 표현</p></div>
+              <div class="bcard" data-card="1"><div class="bh"><span class="who"><span class="av">🏛</span>법률검토</span><span class="tag reject">REJECT</span></div><p>확정 수익 단정 표현 위반</p></div>
+              <div class="bcard" data-card="2"><div class="bh"><span class="who"><span class="av">🔒</span>개인정보</span><span class="tag amend">AMEND</span></div><p>해당 리스크 낮음</p></div>
+              <div class="bcard" data-card="3"><div class="bh"><span class="who"><span class="av">⚙</span>운영리스크</span><span class="tag amend">AMEND</span></div><p>거래 우회 표현 없음</p></div>
+              <div class="bcard" data-card="4"><div class="bh"><span class="who"><span class="av">💼</span>실무적용</span><span class="tag amend">AMEND</span></div><p>조건 명시 시 배포 가능</p></div>
+              <div class="bcard" data-card="5"><div class="bh"><span class="who"><span class="av">🤔</span>반대의견</span><span class="tag reject">REJECT</span></div><p>과소탐지 위험 — 재검토 권고</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 6 교차검증 -->
+      <div class="pstep" data-step="5">
+        <div class="rail"><div class="node">6</div><div class="line"></div></div>
+        <div class="body"><div class="label">교차 검증</div><div class="status">근거 일치·적용성 확인</div>
+          <div class="chunk" data-chunk="5"><div class="note">🔎 Verifier <strong>PARTIAL</strong> — 근거 존재·일치 확인, 일부 적용성 추가 검토 필요</div></div>
+        </div>
+      </div>
+      <!-- 7 판정 -->
+      <div class="pstep" data-step="6">
+        <div class="rail"><div class="node">7</div></div>
+        <div class="body"><div class="label">최종 판정</div><div class="status">승인 상태 결정</div></div>
+      </div>
+    </div>
+
+    <div class="verdict" id="verdict">
+      <div><h3>반려 (재작성 필요) · 위험도 CRITICAL</h3><p>고위험 표현 포함 — 준법 담당자 확인 필요</p></div>
+      <button class="go">전체 결과 보기 →</button>
+    </div>
+  </div>
+
+<script>
+  // ⚠️ 데모 시퀀스 — 실제 구현 시 진짜 처리 이벤트에 연동 (가짜 지연 금지)
+  const steps = [...document.querySelectorAll('.pstep')];
+  const verdict = document.getElementById('verdict');
+  function reset() {
+    steps.forEach(s => s.classList.remove('done','active','pending') || s.classList.add('pending'));
+    document.querySelectorAll('.chunk').forEach(c => c.classList.remove('show'));
+    document.querySelectorAll('.bcard').forEach(c => c.classList.remove('show'));
+    verdict.classList.remove('show');
+  }
+  function activate(i) { steps[i].classList.remove('pending'); steps[i].classList.add('active'); }
+  function done(i) { steps[i].classList.remove('active'); steps[i].classList.add('done'); }
+  function showChunk(i) { const c = steps[i].querySelector('.chunk'); if (c) c.classList.add('show'); }
+
+  function run() {
+    reset();
+    const T = [];
+    // 입력 즉시 완료
+    T.push(setTimeout(()=>{ done(0); activate(1); }, 200));
+    // 분류
+    T.push(setTimeout(()=>{ done(1); showChunk(1); activate(2); }, 900));
+    // 근거검색
+    T.push(setTimeout(()=>{ done(2); showChunk(2); activate(3); }, 1700));
+    // 규칙검사
+    T.push(setTimeout(()=>{ done(3); showChunk(3); activate(4); }, 2500));
+    // 6인 보드 — 카드 하나씩
+    T.push(setTimeout(()=>{ showChunk(4); }, 2700));
+    for (let k=0;k<6;k++) T.push(setTimeout(()=>{ const c=document.querySelector('.bcard[data-card="'+k+'"]'); if(c)c.classList.add('show'); }, 2900 + k*380));
+    T.push(setTimeout(()=>{ done(4); activate(5); }, 5400));
+    // 교차검증
+    T.push(setTimeout(()=>{ done(5); showChunk(5); activate(6); }, 6200));
+    // 판정
+    T.push(setTimeout(()=>{ done(6); verdict.classList.add('show'); }, 7000));
+    // 반복
+    T.push(setTimeout(run, 10000));
+  }
+  run();
+</script>
+</body>
+</html>

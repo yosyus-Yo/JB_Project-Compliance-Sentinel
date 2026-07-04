@@ -1,0 +1,383 @@
+[
+  {
+    "law_name": "전북은행 개인정보 수집·이용 동의서",
+    "article_no": "T-JB-01",
+    "title": "전북은행 마케팅 활용 동의 조항 샘플",
+    "effective_date": "2025-04-01",
+    "source_url": "local://jb-bank/marketing-consent",
+    "text": "고객의 개인정보(성명, 연락처, 거래내역)를 전북은행 및 JB금융그룹 계열사의 상품 안내·캠페인 운영을 위해 활용하며, 가입과 동시에 동의한 것으로 간주합니다.",
+    "keywords": [
+      "전북은행",
+      "개인정보",
+      "마케팅",
+      "계열사",
+      "동의"
+    ]
+  },
+  {
+    "law_name": "전북은행 모바일뱅킹 약관",
+    "article_no": "T-JB-08",
+    "title": "전북은행 비밀번호 관리 책임 조항 샘플",
+    "effective_date": "2025-04-01",
+    "source_url": "local://jb-bank/mobile-banking",
+    "text": "고객이 비밀번호 또는 인증서를 분실·도용당하여 발생한 손해에 대해 전북은행은 일체의 책임을 부담하지 아니합니다.",
+    "keywords": [
+      "전북은행",
+      "비밀번호",
+      "책임제한",
+      "분실",
+      "도용"
+    ]
+  },
+  {
+    "law_name": "전북은행 신용카드 광고 문구",
+    "article_no": "T-JB-AD-01",
+    "title": "전북은행 신용카드 판촉 — 검토 필요",
+    "effective_date": "2025-05-01",
+    "source_url": "local://jb-bank/card-ad",
+    "text": "전북은행 신상품: 원금 보장 + 무위험 + 확정 5% 수익률 보장! 가입 즉시 적용.",
+    "keywords": [
+      "전북은행",
+      "광고",
+      "원금보장",
+      "무위험",
+      "확정수익"
+    ]
+  },
+  {
+    "law_name": "전북은행 자동이체 약관",
+    "article_no": "T-JB-15",
+    "title": "전북은행 자동이체 동의 절차 샘플",
+    "effective_date": "2025-03-15",
+    "source_url": "local://jb-bank/auto-debit",
+    "text": "고객은 자동이체 신청 시 출금계좌의 잔액 부족으로 인한 미납 책임을 부담합니다. 본 행은 자동이체 실패 시 고객에게 알릴 의무를 부담하지 아니합니다.",
+    "keywords": [
+      "전북은행",
+      "자동이체",
+      "잔액부족",
+      "알림의무"
+    ]
+  },
+  {
+    "law_name": "전북은행 미성년자 대출 광고 문구",
+    "article_no": "T-JB-AD-02",
+    "title": "전북은행 청년 대출 — critical 검토",
+    "effective_date": "2025-05-01",
+    "source_url": "local://jb-bank/youth-loan",
+    "text": "만 19세 청년 누구나 한도 무제한 대출 즉시 가능합니다. 신용평가 없이 승인.",
+    "keywords": [
+      "전북은행",
+      "광고",
+      "미성년자",
+      "한도무제한",
+      "무심사"
+    ]
+  },
+  {
+    "law_name": "광주은행 모바일뱅킹 이용약관",
+    "article_no": "T-GJB-14",
+    "title": "광주은행 접근통제 및 책임 제한 조항 샘플",
+    "effective_date": "2025-03-15",
+    "source_url": "local://gwangju-bank/mobile-banking",
+    "text": "고객이 비밀번호·OTP를 타인에게 노출하여 발생한 손해에 대해 광주은행은 책임을 부담하지 아니합니다. 광주은행은 전자금융감독규정 제14조에 따라 접근통제와 보호대책을 수립합니다.",
+    "keywords": [
+      "광주은행",
+      "전자금융",
+      "접근통제",
+      "보호대책",
+      "책임제한"
+    ]
+  },
+  {
+    "law_name": "광주은행 펀드 권유 자료 샘플",
+    "article_no": "T-GJB-FUND-19",
+    "title": "광주은행 펀드 권유 — 설명의무 검토 대상",
+    "effective_date": "2025-04-01",
+    "source_url": "local://gwangju-bank/fund-pitch",
+    "text": "본 펀드는 안정성 위주 운용으로 손실 가능성이 매우 낮습니다. 자세한 운용 보수와 환매 수수료는 가입 후 안내드립니다.",
+    "keywords": [
+      "광주은행",
+      "펀드",
+      "설명의무",
+      "환매수수료",
+      "손실가능성"
+    ]
+  },
+  {
+    "law_name": "광주은행 신용정보 활용 동의서",
+    "article_no": "T-GJB-CR-32",
+    "title": "광주은행 신용정보 제3자 제공",
+    "effective_date": "2025-03-01",
+    "source_url": "local://gwangju-bank/credit-consent",
+    "text": "고객의 개인신용정보를 광주은행 제휴사 및 계열사에 제공·활용하며, 별도 동의 없이 자동 갱신됩니다.",
+    "keywords": [
+      "광주은행",
+      "신용정보",
+      "제3자제공",
+      "자동갱신"
+    ]
+  },
+  {
+    "law_name": "광주은행 인터넷 광고",
+    "article_no": "T-GJB-AD-01",
+    "title": "광주은행 예금 상품 광고",
+    "effective_date": "2025-05-01",
+    "source_url": "local://gwangju-bank/deposit-ad",
+    "text": "광주은행 정기예금 — 시중 최고 금리 5.5% 확정! 가입 시 사은품 100% 증정.",
+    "keywords": [
+      "광주은행",
+      "광고",
+      "확정금리",
+      "최고금리",
+      "사은품"
+    ]
+  },
+  {
+    "law_name": "광주은행 거래내역 보관 약관",
+    "article_no": "T-GJB-21",
+    "title": "광주은행 거래내역 자동 폐기 조항",
+    "effective_date": "2025-03-15",
+    "source_url": "local://gwangju-bank/transaction-records",
+    "text": "고객의 거래내역은 5년간 보관 후 자동 폐기됩니다. 본 행은 고객의 사전 동의 없이 보관 기간을 단축할 수 있습니다.",
+    "keywords": [
+      "광주은행",
+      "거래내역",
+      "보관기간",
+      "자동폐기"
+    ]
+  },
+  {
+    "law_name": "JB우리캐피탈 자동차 할부 광고 문구",
+    "article_no": "T-JBWC-AD",
+    "title": "JB우리캐피탈 마케팅 광고 검토 대상",
+    "effective_date": "2025-05-01",
+    "source_url": "local://jb-woori-capital/auto-loan-ad",
+    "text": "신차 할부 0%부터, 무심사 가능! 한도 무제한으로 누구나 신청 가능합니다. 빠른 승인과 확정 금리로 부담 없이 시작하세요.",
+    "keywords": [
+      "JB우리캐피탈",
+      "할부",
+      "광고",
+      "무심사",
+      "한도무제한"
+    ]
+  },
+  {
+    "law_name": "JB우리캐피탈 대출 약관",
+    "article_no": "T-JBWC-15",
+    "title": "JB우리캐피탈 연체 시 책임 가중",
+    "effective_date": "2025-04-01",
+    "source_url": "local://jb-woori-capital/loan-terms",
+    "text": "고객이 30일 이상 연체할 경우 신용정보집중기관에 등록되며, 본 회사는 별도 안내 없이 즉시 등록할 수 있습니다. 등록으로 인한 모든 불이익은 고객 본인이 부담합니다.",
+    "keywords": [
+      "JB우리캐피탈",
+      "연체",
+      "신용정보등록",
+      "사전안내"
+    ]
+  },
+  {
+    "law_name": "JB우리캐피탈 캠페인 광고",
+    "article_no": "T-JBWC-AD-02",
+    "title": "JB우리캐피탈 마이너스 통장 광고",
+    "effective_date": "2025-05-15",
+    "source_url": "local://jb-woori-capital/credit-line-ad",
+    "text": "마이너스 통장 즉시 개설 — 만 19세 이상 누구나 가입 가능. 신용평가 없이 한도 자동 부여!",
+    "keywords": [
+      "JB우리캐피탈",
+      "광고",
+      "신용평가",
+      "마이너스통장",
+      "한도자동"
+    ]
+  },
+  {
+    "law_name": "JB우리캐피탈 자동차 보험 결합 광고",
+    "article_no": "T-JBWC-AD-03",
+    "title": "JB우리캐피탈 자동차 결합 상품",
+    "effective_date": "2025-05-20",
+    "source_url": "local://jb-woori-capital/combined-ad",
+    "text": "자동차 할부 + 자동차 보험 결합 가입 시 보험료 100% 환급 보장!",
+    "keywords": [
+      "JB우리캐피탈",
+      "광고",
+      "결합상품",
+      "100%환급"
+    ]
+  },
+  {
+    "law_name": "JB우리캐피탈 개인정보 처리방침",
+    "article_no": "T-JBWC-PIPA",
+    "title": "JB우리캐피탈 개인정보 활용",
+    "effective_date": "2025-03-01",
+    "source_url": "local://jb-woori-capital/privacy",
+    "text": "JB우리캐피탈은 고객의 개인정보를 마케팅 및 신상품 안내, 신용평가, 채권추심 목적으로 활용하며, 본 약관 동의 시 별도 동의 없이 처리합니다.",
+    "keywords": [
+      "JB우리캐피탈",
+      "개인정보",
+      "마케팅",
+      "채권추심"
+    ]
+  },
+  {
+    "law_name": "JB자산운용 펀드 판매 권유 자료 샘플",
+    "article_no": "T-JBAM-19",
+    "title": "JB자산운용 일반금융소비자 권유 시 설명 누락 사례",
+    "effective_date": "2025-06-01",
+    "source_url": "local://jb-asset-mgmt/fund-pitch",
+    "text": "본 펀드는 시중 예금 대비 높은 수익률이 예상되며, 원금 보장에 가까운 안전 자산으로 운용됩니다. 환매 수수료, 운용 보수, 손실 가능성 등 상세 사항은 가입 후 안내됩니다.",
+    "keywords": [
+      "JB자산운용",
+      "펀드",
+      "원금보장",
+      "설명의무",
+      "환매수수료"
+    ]
+  },
+  {
+    "law_name": "JB자산운용 사모펀드 안내",
+    "article_no": "T-JBAM-PVT",
+    "title": "JB자산운용 사모펀드 권유",
+    "effective_date": "2025-05-01",
+    "source_url": "local://jb-asset-mgmt/private-fund",
+    "text": "사모펀드는 일반 펀드 대비 수익률이 높으며, 일정 수익은 보장됩니다. 투자자격 검증 절차는 가입 후 진행합니다.",
+    "keywords": [
+      "JB자산운용",
+      "사모펀드",
+      "수익보장",
+      "투자자격"
+    ]
+  },
+  {
+    "law_name": "JB자산운용 ELS 상품 안내",
+    "article_no": "T-JBAM-ELS",
+    "title": "JB자산운용 ELS 권유 자료",
+    "effective_date": "2025-04-15",
+    "source_url": "local://jb-asset-mgmt/els-pitch",
+    "text": "ELS 상품은 기초자산 하락 시 원금 일부 손실 가능합니다. 단, 90% 이상의 시장 시나리오에서 원금 보전이 예상됩니다.",
+    "keywords": [
+      "JB자산운용",
+      "ELS",
+      "원금손실",
+      "기초자산"
+    ]
+  },
+  {
+    "law_name": "JB자산운용 마케팅 메일",
+    "article_no": "T-JBAM-AD",
+    "title": "JB자산운용 신상품 광고 메일",
+    "effective_date": "2025-05-25",
+    "source_url": "local://jb-asset-mgmt/marketing-email",
+    "text": "JB자산운용 신상품 — 연 10% 확정 수익, 손실 가능성 0%, 즉시 가입 시 사은품 100만원 상당!",
+    "keywords": [
+      "JB자산운용",
+      "광고",
+      "확정수익",
+      "손실0%",
+      "사은품"
+    ]
+  },
+  {
+    "law_name": "JB자산운용 환매 정책",
+    "article_no": "T-JBAM-RED",
+    "title": "JB자산운용 환매 수수료",
+    "effective_date": "2025-04-01",
+    "source_url": "local://jb-asset-mgmt/redemption",
+    "text": "고객의 환매 요청은 본 회사가 정한 영업일 내 처리되며, 환매 수수료는 가입 시 안내한 비율을 따릅니다. 단, 시장 상황에 따라 환매 처리가 지연될 수 있습니다.",
+    "keywords": [
+      "JB자산운용",
+      "환매",
+      "수수료",
+      "처리지연"
+    ]
+  },
+  {
+    "law_name": "JB인베스트먼트 투자유치 안내 샘플",
+    "article_no": "T-JBINV-PITCH-01",
+    "title": "JB인베스트먼트 스타트업 투자유치 문구 — 수익 보장 표현 검토",
+    "effective_date": "2025-06-01",
+    "source_url": "local://jb-investment/startup-pitch-review",
+    "text": "JB인베스트먼트와 함께하는 비상장 성장기업 투자 기회입니다. 초기 투자자는 3년 내 원금 2배 회수가 가능하며 손실 위험은 제한적입니다.",
+    "keywords": [
+      "JB인베스트먼트",
+      "비상장투자",
+      "원금2배",
+      "손실위험",
+      "투자유치"
+    ]
+  },
+  {
+    "law_name": "JB인베스트먼트 사모투자 설명자료 샘플",
+    "article_no": "T-JBINV-PEF-02",
+    "title": "JB인베스트먼트 사모투자 — 투자자격·위험고지 검토",
+    "effective_date": "2025-06-01",
+    "source_url": "local://jb-investment/private-equity-disclosure",
+    "text": "사모투자 상품은 전문투자자에게 적합하며 유동성 제약, 원금 손실 가능성, 중도 환매 제한을 가입 전 명확히 설명해야 합니다.",
+    "keywords": [
+      "JB인베스트먼트",
+      "사모투자",
+      "전문투자자",
+      "원금손실",
+      "환매제한"
+    ]
+  },
+  {
+    "law_name": "전북은행 모바일 예금 IM뱅크 광고 샘플",
+    "article_no": "T-JBB-IM-DEPOSIT-01",
+    "title": "전북은행 모바일 예금 광고 — 최고금리 조건 고지",
+    "effective_date": "2025-06-01",
+    "source_url": "local://jb-bank/im-bank-deposit-ad",
+    "text": "IM뱅크 모바일 정기예금은 최고 연 5.2% 금리를 제공합니다. 우대금리 조건, 가입 한도, 세전·세후 기준, 중도해지 시 적용 금리를 함께 고지해야 합니다.",
+    "keywords": [
+      "전북은행",
+      "IM뱅크",
+      "정기예금",
+      "우대금리",
+      "중도해지"
+    ]
+  },
+  {
+    "law_name": "광주은행 소상공인 대출 광고 샘플",
+    "article_no": "T-GJB-SME-LOAN-01",
+    "title": "광주은행 소상공인 대출 — 승인·금리 조건 고지",
+    "effective_date": "2025-06-01",
+    "source_url": "local://gwangju-bank/sme-loan-ad",
+    "text": "광주은행 소상공인 대출은 심사 결과에 따라 한도와 금리가 달라질 수 있으며, 신용도 하락 가능성 및 상환 조건을 광고 본문 또는 연결 화면에 표시해야 합니다.",
+    "keywords": [
+      "광주은행",
+      "소상공인",
+      "대출",
+      "심사",
+      "상환조건"
+    ]
+  },
+  {
+    "law_name": "JB우리캐피탈 자동차 할부 필수고지 샘플",
+    "article_no": "T-JBWC-AUTO-DISC-01",
+    "title": "JB우리캐피탈 자동차 할부 — 금리·수수료·연체 고지",
+    "effective_date": "2025-06-01",
+    "source_url": "local://jb-woori-capital/auto-finance-disclosure",
+    "text": "자동차 할부 광고에는 할부금리 범위, 취급수수료 여부, 중도상환수수료, 연체이자율, 심사 결과에 따른 조건 변동 가능성을 명확히 표시해야 합니다.",
+    "keywords": [
+      "JB우리캐피탈",
+      "자동차할부",
+      "할부금리",
+      "중도상환수수료",
+      "연체이자율"
+    ]
+  },
+  {
+    "law_name": "JB자산운용 고령투자자 펀드 안내 샘플",
+    "article_no": "T-JBAM-SENIOR-01",
+    "title": "JB자산운용 고령투자자 대상 권유 — 적합성·설명의무",
+    "effective_date": "2025-06-01",
+    "source_url": "local://jb-asset-mgmt/senior-investor-suitability",
+    "text": "고령투자자에게 펀드 또는 ELS를 권유할 때에는 투자성향, 손실감내능력, 원금손실 가능성, 환매 제한을 확인하고 설명 이력을 남겨야 합니다.",
+    "keywords": [
+      "JB자산운용",
+      "고령투자자",
+      "적합성",
+      "설명의무",
+      "원금손실"
+    ]
+  }
+]

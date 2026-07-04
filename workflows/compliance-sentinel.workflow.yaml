@@ -1,0 +1,137 @@
+schema_version: compliance-sentinel-workflow/v1
+name: compliance-sentinel-langgraph
+purpose: 금융 약관/광고/계약 문구에 대한 판단-행동-검증 기반 준법 검토 workflow
+runtime: LangGraph
+
+state:
+  input_text: string
+  redacted_text: string
+  input_type: terms|advertisement|contract|transaction_scenario|unknown
+  pii_findings: list
+  retrieved_context: list
+  board_opinions: map
+  ceo_draft: object
+  atomic_claims: list
+  verifier_results: list
+  retry_count: integer
+  final_report: object
+  audit_log_id: string
+  human_review_needed: boolean
+
+nodes:
+  - id: classify_input
+    owner: langgraph-engineer
+    kind: deterministic_or_llm
+    description: 입력을 약관/광고/계약/거래 시나리오로 분류한다.
+    tools: []
+    outputs: [input_type]
+
+  - id: pii_guard
+    owner: security-engineer
+    kind: tool
+    description: PII를 탐지하고 LLM 전달 전 마스킹한다.
+    tools: [detect_pii, redact_pii]
+    outputs: [redacted_text, pii_findings]
+
+  - id: retrieve_context
+    owner: rag-engineer
+    kind: tool
+    description: 법령/약관/정책 context를 hybrid search로 검색한다.
+    tools: [search_regulation, retrieve_jb_policy]
+    outputs: [retrieved_context]
+
+  - id: parallel_board_review
+    owner: multi-agent-orchestrator
+    kind: parallel_agents
+    description: 6인 컴플라이언스 보드가 병렬 검토한다.
+    agents:
+      - legal-counsel
+      - pipa-credit-info-expert
+      - consumer-protection-expert
+      - aml-operational-risk-expert
+      - business-practicality-expert
+      - contrarian-agent
+    outputs: [board_opinions]
+
+  - id: synthesize_opinion
+    owner: multi-agent-orchestrator
+    kind: llm
+    description: CEO agent가 위험 판단, 근거 citation, 수정안을 종합한다.
+    inputs: [board_opinions, retrieved_context]
+    outputs: [ceo_draft]
+
+  - id: verify_atomic_claims
+    owner: compliance-verifier-engineer
+    kind: verifier
+    description: 법령 인용과 적용 논리를 원자적 클레임으로 검증한다.
+    tools: [check_citation, get_law_article]
+    outputs: [atomic_claims, verifier_results]
+
+  - id: revise_opinion
+    owner: langgraph-engineer
+    kind: llm
+    description: verifier 피드백을 반영해 CEO draft를 수정한다.
+    inputs: [ceo_draft, verifier_results]
+    outputs: [ceo_draft, retry_count]
+
+  - id: human_review
+    owner: product-safety-lead
+    kind: interrupt
+    description: 고위험/불확실 판단을 인간 검토로 넘긴다.
+    outputs: [human_review_needed]
+
+  - id: final_report
+    owner: product-strategist
+    kind: formatter
+    description: 심사위원/실무자가 읽을 최종 보고서를 생성한다.
+    outputs: [final_report]
+
+  - id: audit_log
+    owner: audit-engineer
+    kind: append_only_log
+    description: 모든 도구 호출, 검증 결과, 최종 판단을 감사 로그에 저장한다.
+    tools: [write_audit_log]
+    outputs: [audit_log_id]
+
+edges:
+  - from: START
+    to: classify_input
+  - from: classify_input
+    to: pii_guard
+  - from: pii_guard
+    to: retrieve_context
+  - from: retrieve_context
+    to: parallel_board_review
+  - from: parallel_board_review
+    to: synthesize_opinion
+  - from: synthesize_opinion
+    to: verify_atomic_claims
+  - from: verify_atomic_claims
+    condition: verifier_failed_and_retry_available
+    to: revise_opinion
+  - from: revise_opinion
+    to: verify_atomic_claims
+  - from: verify_atomic_claims
+    condition: high_risk_or_low_confidence
+    to: human_review
+  - from: verify_atomic_claims
+    condition: verified_or_partial_with_review_not_required
+    to: final_report
+  - from: human_review
+    to: final_report
+  - from: final_report
+    to: audit_log
+  - from: audit_log
+    to: END
+
+routing_rules:
+  verifier_failed_and_retry_available: retry_count < 3 and any(verifier_results.status == 'FAIL')
+  high_risk_or_low_confidence: risk_level in ['HIGH', 'CRITICAL'] or confidence in ['PARTIAL', 'FAILED']
+  verified_or_partial_with_review_not_required: no_critical_failure and human_review_needed == false
+
+safety:
+  llm_input_must_use_redacted_text: true
+  write_tools_allowed: [write_audit_log]
+  destructive_tools_allowed: []
+  external_side_effect_tools_allowed: []
+  human_interrupt_before: [human_review]
