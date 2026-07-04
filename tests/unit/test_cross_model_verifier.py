@@ -22,8 +22,9 @@ from compliance_sentinel.cross_model_verifier import (
 
 
 class TestDefaultCrossModel:
-    def test_returns_gpt_5_5(self):
-        assert _default_cross_model() == "gpt-5.5"
+    def test_returns_default_critic(self):
+        # 2026-07-04: critic 기본값 = claude-opus-4-8 (Claude 최신 tier 전환)
+        assert _default_cross_model() == "claude-opus-4-8"
 
     def test_unset_env_returns_default(self, monkeypatch):
         # 2026-07-03: 기본 critic = claude-opus-4-8 (Anthropic 전환)

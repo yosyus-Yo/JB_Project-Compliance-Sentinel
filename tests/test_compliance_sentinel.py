@@ -3217,7 +3217,7 @@ class UISettingsTests(unittest.TestCase):
             save_encrypted_settings(
                 {
                     "secrets": {},
-                    "models": {"CS_MODEL_SHALLOW": "gpt-5.4-nano"},
+                    "models": {"CS_MODEL_SHALLOW": "claude-haiku-4-5"},
                     "flags": {"CS_ENABLE_LLM_RUNTIME": "1"},
                     "routing": {
                         "CS_LIVE_REVIEW_PROFILE": "strict",

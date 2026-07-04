@@ -262,6 +262,61 @@ function SecureSettingsPanel({ onApplied }: { onApplied: () => void }) {
         <Lock className="h-5 w-5 text-forest-700" />
       </div>
 
+      <details
+        className="settings-usage-guide"
+        id="settings-usage-guide"
+        style={{
+          border: '1px solid var(--line, #dbd8cf)',
+          borderRadius: 8,
+          padding: '0.6rem 0.85rem',
+          marginBottom: '1rem',
+          fontSize: '0.83rem',
+          lineHeight: 1.55,
+        }}
+      >
+        <summary style={{ cursor: 'pointer', fontWeight: 600 }}>
+          📖 사용법 — 처음이면 펼쳐보세요
+        </summary>
+        <ol style={{ margin: '0.6rem 0 0.4rem', paddingLeft: '1.2rem' }}>
+          <li>
+            <strong>마스터 비밀번호</strong>를 먼저 입력합니다. 아래 API 키·모델·플래그는 이
+            비밀번호로 암호화되어 저장됩니다(처음이면 새로 생성).
+          </li>
+          <li>
+            <strong>필수 API 키</strong>(OpenAI 심의 LLM / 법령정보센터)와 원하는 런타임 플래그를
+            입력·체크합니다.
+          </li>
+          <li>
+            버튼 3종을 구분해서 사용합니다:
+            <ul style={{ margin: '0.3rem 0', paddingLeft: '1.1rem' }}>
+              <li><strong>Load</strong> — 저장된 암호화 설정을 비밀번호로 복호화해 불러오기</li>
+              <li>
+                <strong>Apply</strong> — <em>이번 세션(서버 프로세스)에만</em> 즉시 적용. 암호화
+                저장은 하지 않으며 서버 재시작 시 사라집니다.
+              </li>
+              <li><strong>Save encrypted</strong> — 암호화 파일로 <em>영구 저장</em> + 즉시 적용</li>
+            </ul>
+          </li>
+          <li>
+            Apply/Save 시 <strong>Python 워커가 자동 재시작</strong>되어 새 키·모델이 실제 심의
+            경로에 반영됩니다.
+          </li>
+        </ol>
+        <p style={{ margin: '0.5rem 0 0.3rem' }}>
+          ⚠️ <strong>모델명은 고정 프리셋만 허용</strong>됩니다 —{' '}
+          <code>claude-haiku-4-5</code>(간단) / <code>claude-sonnet-5</code>(일반·보드) /{' '}
+          <code>claude-opus-4-8</code>(복잡·검증) (검증/비평 모델 칸은 <code>anthropic/claude-*</code>{' '}
+          계열도 허용). 오타·임의 저비용 모델로 인한 심의 재현성 훼손을 막기 위한 allowlist이며, 그
+          외 값을 넣고 저장하면 거부됩니다.
+        </p>
+        <p style={{ margin: '0.3rem 0 0' }}>
+          🤖 <strong>LLM 보드를 실제로 켜려면</strong>: <code>라이브 LLM 호출</code>
+          (CS_ENABLE_LLM_RUNTIME) 체크 + 해당 provider API 키가 필요하고, 6인 보드 판정에 LLM을
+          반영하려면 <code>LLM 보드 verdict 반영</code>(CS_USE_LLM_BOARD_VERDICTS)까지 켜야 합니다.
+          둘 다 꺼져 있으면(또는 키가 없으면) 규칙 기반 deterministic 심의로 안전하게 동작합니다.
+        </p>
+      </details>
+
       <div className="settings-lock-row">
         <label className="select-field">
           <span>마스터 비밀번호</span>

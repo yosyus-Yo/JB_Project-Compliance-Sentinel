@@ -33,7 +33,7 @@ class TestModelConstants:
         assert MODEL_OPENAI_NANO == "claude-haiku-4-5"
 
     def test_standard_default_is_sonnet(self):
-        assert MODEL_CODEX_MINI == "claude-sonnet-4-6"
+        assert MODEL_CODEX_MINI == "claude-sonnet-5"
 
     def test_deep_default_is_opus(self):
         assert MODEL_CODEX == "claude-opus-4-8"
@@ -52,7 +52,7 @@ class TestClaudeModels:
         assert MODEL_HAIKU == "claude-haiku-4-5"
 
     def test_sonnet(self):
-        assert MODEL_SONNET == "claude-sonnet-4-6"
+        assert MODEL_SONNET == "claude-sonnet-5"
 
 
 class TestTierBaseModel:

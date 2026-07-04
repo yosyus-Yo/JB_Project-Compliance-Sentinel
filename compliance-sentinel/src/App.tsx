@@ -66,7 +66,7 @@ import type { ComplianceReport, HealthStatus, InferredMetadata } from "./types.j
 import OperationsPanel, { type OperationsTab } from "./components/OperationsPanel.js";
 import LiveReviewProgress from "./components/LiveReviewProgress.js";
 import { streamReview, type ReviewNodeStatus } from "./streamReview.js";
-import { canSeeTab, canDelete, canSettings, roleBadge } from "./permissions.js";
+import { canSeeTab, canDelete, roleBadge } from "./permissions.js";
 import {
   reportToAuditItem,
   reportsToAuditItems,

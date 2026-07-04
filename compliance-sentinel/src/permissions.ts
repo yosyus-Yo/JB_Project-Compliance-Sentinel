@@ -17,7 +17,7 @@ const TAB_ROLES: Record<string, Role[]> = {
   // screen / history / architecture = 공개(미등록 = 전체 허용)
 };
 
-// 데모/제출 UI에서 숨기는 탭. RBAC 로직(canDelete/canSettings 등)은 그대로 유지되므로
+// 데모/제출 UI에서 숨기는 탭. RBAC 로직(canSeeTab/canDelete)은 그대로 유지되므로
 // "책임질 수 있는 AI"(RBAC/SoD) 근거는 코드로 남고, 시연 화면에서만 노출을 차단한다.
 // 재노출하려면 이 집합에서 해당 탭을 제거하면 nav·접근가드·렌더가 한 번에 복원된다.
 const HIDDEN_TABS = new Set<string>([]);
@@ -27,11 +27,9 @@ export const canSeeTab = (role: Role | undefined, tab: string): boolean =>
     ? false
     : !TAB_ROLES[tab] || (role ? TAB_ROLES[tab].includes(role) : false);
 
-export const canApprove = (r?: Role): boolean => r === "ADMIN" || r === "COMPLIANCE_OFFICER";
+// 세부 액션 권한은 canDelete만 실제 사용(App.tsx 삭제 액션 게이트). 나머지 액션은
+// canSeeTab 탭 게이트로 접근이 제어되므로 별도 per-action 헬퍼는 두지 않는다.
 export const canDelete = (r?: Role): boolean => r === "ADMIN";
-export const canSettings = (r?: Role): boolean => r === "ADMIN";
-export const canIngest = (r?: Role): boolean => r === "ADMIN" || r === "COMPLIANCE_OFFICER";
-export const canPublish = (r?: Role): boolean => r === "ADMIN" || r === "COMPLIANCE_OFFICER";
 
 export interface RoleBadge {
   label: string;

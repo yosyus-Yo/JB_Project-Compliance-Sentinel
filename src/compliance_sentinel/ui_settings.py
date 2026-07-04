@@ -85,10 +85,10 @@ SECRET_FIELDS = [
 ]
 
 MODEL_FIELDS = [
-    ModelField("CS_MODEL_SHALLOW", "간단한 작업 모델", "gpt-5.4-nano", "fixed classifier/documenter/shallow route"),
-    ModelField("CS_MODEL_STANDARD", "일반 작업 모델", "gpt-5.4-mini", "fixed board/non-critical CEO/non-critical verifier route"),
-    ModelField("CS_MODEL_DEEP", "복잡한 작업 모델", "gpt-5.5", "fixed critical CEO/deep route"),
-    ModelField("CS_MODEL_CRITIC", "검증/비평 모델", "gpt-5.5", "fixed critical and cross-model validation route"),
+    ModelField("CS_MODEL_SHALLOW", "간단한 작업 모델", "claude-haiku-4-5", "fixed classifier/documenter/shallow route"),
+    ModelField("CS_MODEL_STANDARD", "일반 작업 모델", "claude-sonnet-5", "fixed board/non-critical CEO/non-critical verifier route"),
+    ModelField("CS_MODEL_DEEP", "복잡한 작업 모델", "claude-opus-4-8", "fixed critical CEO/deep route"),
+    ModelField("CS_MODEL_CRITIC", "검증/비평 모델", "claude-opus-4-8", "fixed critical and cross-model validation route"),
 ]
 FIXED_MODEL_BY_ENV = {field.env: field.default for field in MODEL_FIELDS}
 CRITIC_PROVIDER_PREFIXES = ("openrouter/anthropic/", "anthropic/claude-")
@@ -195,7 +195,7 @@ def validate_model_settings(models: dict[str, str]) -> None:
         if value != expected:
             raise ValueError(
                 f"{field.env}는 {expected}로 고정되어 있습니다. "
-                "허용 모델은 gpt-5.5, gpt-5.4-mini, gpt-5.4-nano뿐입니다."
+                "허용 모델은 claude-opus-4-8, claude-sonnet-5, claude-haiku-4-5뿐입니다."
             )
 
 

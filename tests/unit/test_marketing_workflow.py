@@ -132,7 +132,7 @@ class TestForceCrossModel:
         result = _force_cross_model_for_high_risk_findings(plan, review)
         assert result is True
         assert plan["cross_model"]["level"] == "STRONG"
-        assert plan["cross_model"]["model"] == "gpt-5.5"
+        assert plan["cross_model"]["model"] == "claude-opus-4-8"
         assert plan["cross_model"]["auto_attach"] is True
 
     def test_critical_finding_forces_strong(self):

@@ -77,7 +77,7 @@ class TestFieldsLists:
 class TestFixedModelByEnv:
     def test_dict_with_defaults(self):
         assert "CS_MODEL_DEEP" in FIXED_MODEL_BY_ENV
-        assert FIXED_MODEL_BY_ENV["CS_MODEL_DEEP"] == "gpt-5.5"
+        assert FIXED_MODEL_BY_ENV["CS_MODEL_DEEP"] == "claude-opus-4-8"
 
 
 class TestSectionAllowedEnvNames:
@@ -104,7 +104,7 @@ class TestDefaultSettings:
 
     def test_models_default_set(self):
         result = default_settings()
-        assert result["models"]["CS_MODEL_DEEP"] == "gpt-5.5"
+        assert result["models"]["CS_MODEL_DEEP"] == "claude-opus-4-8"
 
 
 class TestHasEncryptedSettings:

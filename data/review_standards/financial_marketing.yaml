@@ -134,9 +134,5 @@ channels:
   app_push:
     max_recommended_length: 90
     must_include_link_to_terms: true
-  banner:
-    must_include_short_disclaimer: true
   sns:
     must_include_hashtag_review: true
-  email:
-    must_include_full_disclaimer: true

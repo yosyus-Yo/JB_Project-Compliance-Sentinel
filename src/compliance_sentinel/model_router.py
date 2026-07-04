@@ -86,7 +86,7 @@ def _model_env(primary: str, legacy: str, default: str) -> str:
 # 기본 tier 모델 = Anthropic Claude (2026-07-03). 상수명(MODEL_OPENAI_NANO 등)은
 # 하위 호환을 위해 유지하나 실제 값은 Claude tier이다: haiku=shallow, sonnet=standard, opus=deep.
 MODEL_OPENAI_NANO = _model_env("CS_MODEL_SHALLOW", "CS_MODEL_OPENAI_NANO", "claude-haiku-4-5")
-MODEL_CODEX_MINI = _model_env("CS_MODEL_STANDARD", "CS_MODEL_CODEX_MINI", "claude-sonnet-4-6")
+MODEL_CODEX_MINI = _model_env("CS_MODEL_STANDARD", "CS_MODEL_CODEX_MINI", "claude-sonnet-5")
 MODEL_CODEX = _model_env("CS_MODEL_DEEP", "CS_MODEL_CODEX_DEEP", "claude-opus-4-8")
 MODEL_CRITIC = _critic_model_env("CS_MODEL_CRITIC", default="claude-opus-4-8")
 
@@ -108,7 +108,7 @@ def refresh_model_config_from_env() -> None:
     global MODEL_SHALLOW, MODEL_STANDARD, MODEL_DEEP
     global TIER_BASE_MODEL, VALIDATION_MODEL
     MODEL_OPENAI_NANO = _model_env("CS_MODEL_SHALLOW", "CS_MODEL_OPENAI_NANO", "claude-haiku-4-5")
-    MODEL_CODEX_MINI = _model_env("CS_MODEL_STANDARD", "CS_MODEL_CODEX_MINI", "claude-sonnet-4-6")
+    MODEL_CODEX_MINI = _model_env("CS_MODEL_STANDARD", "CS_MODEL_CODEX_MINI", "claude-sonnet-5")
     MODEL_CODEX = _model_env("CS_MODEL_DEEP", "CS_MODEL_CODEX_DEEP", "claude-opus-4-8")
     MODEL_CRITIC = _critic_model_env("CS_MODEL_CRITIC", default="claude-opus-4-8")
     MODEL_SHALLOW = MODEL_OPENAI_NANO
@@ -132,7 +132,7 @@ def current_deep_model() -> str:
 
 # Backward-compatible aliases for tests/imports. These are no longer the primary route.
 MODEL_HAIKU = "claude-haiku-4-5"
-MODEL_SONNET = "claude-sonnet-4-6"
+MODEL_SONNET = "claude-sonnet-5"
 
 # Tier별 base model — fixed OpenAI route.
 TIER_BASE_MODEL = {

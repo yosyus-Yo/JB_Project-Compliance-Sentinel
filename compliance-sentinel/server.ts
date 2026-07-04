@@ -1328,9 +1328,9 @@ def schema():
         "flag_fields": [asdict(field) for field in FLAG_FIELDS],
         "routing_fields": [asdict(field) for field in ROUTING_FIELDS],
         "model_presets": [
-            "gpt-5.5",
-            "gpt-5.4-mini",
-            "gpt-5.4-nano",
+            "claude-opus-4-8",
+            "claude-sonnet-5",
+            "claude-haiku-4-5",
         ],
     }
 
