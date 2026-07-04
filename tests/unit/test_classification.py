@@ -53,6 +53,23 @@ class TestAdvertisementClassification:
     def test_multilingual_advertisement_keywords(self, text):
         assert classify_input(text) == "advertisement"
 
+    @pytest.mark.parametrize(
+        "text",
+        [
+            # 상품 키워드 없는 압박형 다크패턴 문구 — advertisement로 분류되어야 마케팅 심의
+            # (다크패턴 탐지)를 받는다. 이전엔 unknown으로 빠져 심의를 우회하던 결함(2026-07-04).
+            "선착순 50명! 지금 신청 안 하면 후회합니다. 이미 3,240명이 가입했어요.",
+            "마지막 기회! 놓치면 평생 후회",
+            "지금 바로 서두르세요",
+            "1,234명이 신청 중",
+            "무료 증정 이벤트",
+        ],
+    )
+    def test_pressure_dark_pattern_signals_classified_as_ad(self, text):
+        assert classify_input(text) == "advertisement", (
+            f"압박형 문구가 advertisement로 분류 안 됨 → 마케팅 심의 우회: {text!r}"
+        )
+
 
 class TestTermsClassification:
     @pytest.mark.parametrize(
