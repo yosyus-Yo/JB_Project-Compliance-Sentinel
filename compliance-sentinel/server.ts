@@ -9,7 +9,7 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import { spawn, type ChildProcessWithoutNullStreams } from 'child_process';
+import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from 'child_process';
 import { createHash } from 'crypto';
 import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
@@ -51,7 +51,22 @@ if (process.env.USE_LANGGRAPH === undefined) {
 }
 
 const PORT = Number(process.env.PORT || 3000);
-const PYTHON_BIN = process.env.PYTHON_BIN || 'python';
+
+// Python 바이너리 자동 감지: 표준 macOS/Linux에는 'python'이 없고 'python3'만 있는 경우가 많아
+// 기본값 'python'이면 `spawn python ENOENT`로 워커가 기동하지 못하는 결함(2026-07-04)을 수정.
+// PYTHON_BIN이 명시되면 그대로 사용, 아니면 python3 → python 순으로 실제 존재하는 것을 선택.
+function detectPythonBin(): string {
+  if (process.env.PYTHON_BIN) return process.env.PYTHON_BIN;
+  for (const bin of ['python3', 'python']) {
+    try {
+      if (spawnSync(bin, ['--version'], { stdio: 'ignore' }).status === 0) return bin;
+    } catch {
+      /* 해당 바이너리 없음 — 다음 후보 시도 */
+    }
+  }
+  return 'python3';
+}
+const PYTHON_BIN = detectPythonBin();
 const PYTHON_WORKER_PORT = Number(process.env.CS_PYTHON_WORKER_PORT || 8765);
 const PYTHON_WORKER_URL = (process.env.CS_PYTHON_WORKER_URL || `http://127.0.0.1:${PYTHON_WORKER_PORT}`).replace(/\/+$/, '');
 const PYTHON_WORKER_EXTERNAL = Boolean(process.env.CS_PYTHON_WORKER_URL);

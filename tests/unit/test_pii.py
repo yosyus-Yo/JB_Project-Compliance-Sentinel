@@ -130,6 +130,45 @@ class TestKoreanBoundary:
         assert raw_pii not in redacted, f"한글 인접 PII 마스킹 실패: {text!r}"
 
 
+class TestTrailingPunctuationBoundary:
+    """Bug #2 회귀 방지 (2026-07-04): PII가 마침표 등 문장부호로 끝나면 마스킹 실패하던 치명 결함.
+
+    원인: 경계 정규식이 마침표(.)를 word-continuation 문자로 취급 → 한국어 문어체 문장 끝
+    "...900101-1234567." 에서 RRN/전화/카드가 마스킹되지 않고 감사로그에 평문 저장됨.
+    """
+
+    @pytest.mark.parametrize(
+        "text, raw_pii",
+        [
+            ("고객 주민번호는 900101-1234567.", "900101-1234567"),
+            ("연락처 010-1234-5678.", "010-1234-5678"),
+            ("카드 1234-5678-9012-3456.", "1234-5678-9012-3456"),
+            ("문의 test@example.com.", "test@example.com"),
+            ("계좌 123-456-7890.", "123-456-7890"),
+            # 마침표 + 뒤 문장 이어짐
+            ("주민번호 900101-1234567. 확인 바랍니다.", "900101-1234567"),
+            # 다른 문장부호도 정상 (기존 동작 보존 확인)
+            ("주민번호(900101-1234567), 확인", "900101-1234567"),
+        ],
+    )
+    def test_pii_masked_before_sentence_ending_period(self, text, raw_pii):
+        redacted, findings = redact_pii(text)
+        assert len(findings) >= 1, f"문장부호 종료 PII 미탐지: {text!r}"
+        assert raw_pii not in redacted, f"문장부호 종료 PII 마스킹 실패(평문 잔존): {text!r}"
+
+    def test_period_does_not_cause_email_false_positive_as_rrn(self):
+        # 이메일 뒤 마침표가 RRN 등으로 오탐되지 않아야 (경계 완화의 부작용 방지)
+        redacted, findings = redact_pii("메일 a@b.com.")
+        kinds = {f.kind for f in findings}
+        assert "email" in kinds
+        assert "rrn" not in kinds and "account" not in kinds
+
+    def test_alphanumeric_boundary_still_prevents_partial_match(self):
+        # 영숫자 인접 시 부분매칭 방지는 유지되어야 (8자리 뒤 숫자 → RRN 오탐 방지)
+        _, findings = redact_pii("코드900101-12345678끝")
+        assert all(f.value != "900101-1234567" for f in findings)
+
+
 class TestPatternRegistry:
     """PII_PATTERNS 구조 검증 — 향후 패턴 추가 시 회귀 방지."""
 

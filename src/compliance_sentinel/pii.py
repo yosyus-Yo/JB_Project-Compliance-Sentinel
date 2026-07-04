@@ -6,8 +6,12 @@ from .models import PIIFinding
 
 # 한글 인접 시 Python `\b`가 풀리지 않는 문제(예: "com으로", "1234567과")를 회피.
 # 영문/숫자/언더스코어 + ASCII '@' 등을 경계로 보고, 한글은 경계로 인정.
-_BOUNDARY_LEFT = r"(?:^|(?<=[^A-Za-z0-9_@.+\-]))"
-_BOUNDARY_RIGHT = r"(?=$|[^A-Za-z0-9_@.+\-])"
+# ⚠️ 마침표(.)는 경계 문자집합에서 제외한다: 한국어 문어체는 문장을 마침표로 끝내므로
+#    "...900101-1234567." 처럼 PII 뒤에 마침표가 오면 마스킹이 실패하던 치명 결함(2026-07-04)을
+#    수정. 마침표를 delimiter로 인정하되, 영숫자/@/+/- 는 여전히 token 연속으로 보아 부분매칭·
+#    8자리 오탐·이메일 오탐 방지는 유지된다.
+_BOUNDARY_LEFT = r"(?:^|(?<=[^A-Za-z0-9_@+\-]))"
+_BOUNDARY_RIGHT = r"(?=$|[^A-Za-z0-9_@+\-])"
 
 PII_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("rrn", re.compile(_BOUNDARY_LEFT + r"\d{6}-[1-4]\d{6}" + _BOUNDARY_RIGHT)),
