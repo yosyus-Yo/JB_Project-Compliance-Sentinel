@@ -24,7 +24,8 @@ _SEMANTIC_CUES: list[tuple[str, "re.Pattern[str]", float]] = [
     ("semantic_role_override_ko", re.compile(r"(지금|이제)\s*부터[^\n]{0,12}(너|넌|당신|어시스턴트|봇)"), 0.6),
     ("semantic_exfiltration_ko", re.compile(r"(보내|전송|전달|유출|알려|공개)[^\n]{0,20}(비밀|자격\s*증명|api[_ ]?key|비밀번호|암호|토큰|시스템\s*프롬프트)"), 0.8),
     ("semantic_filter_bypass_ko", re.compile(r"(무시|해제|끄|우회|비활성)[^\n]{0,12}(필터|가드|안전|규칙|정책|검열|제한)|(필터|가드|안전\s*장치|규칙|정책|검열|제한)[^\n]{0,12}(무시|해제|우회|비활성)"), 0.8),
-    # "이전/위 지시(명령/프롬프트)를 무시" — filter/guard 키워드 없이도 지시 무효화 문형 차단 (2026-07-04, 심사 리포트 gap)
+    # "이전/위 지시(명령/프롬프트)를 무시" 류 — filter/guard 키워드 없이도 지시 무효화 문형(한국어)을
+    # 차단한다. 영어 전용 PROMPT_ATTACK_RE가 놓치는 비영어 인젝션 blind spot 보강.
     ("semantic_instruction_override_ko", re.compile(r"(이전|앞|위|모든|지금까지)\s*(의\s*)?(지시|명령|지침|프롬프트|설정)[^\n]{0,15}(무시|무효|잊)"), 0.8),
     ("semantic_persona_jailbreak_ko", re.compile(r"(제한\s*없|무엇이든|탈옥|규칙\s*없이|윤리\s*없이|검열\s*없)"), 0.7),
 ]

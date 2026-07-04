@@ -71,9 +71,11 @@ test.describe('시연 핵심 플로우', () => {
     await textarea.fill(RISKY_DRAFT);
     await submit.click();
 
-    // 3) 심의 진행(로더) 또는 결과가 나타난다 — 결과 뷰의 복귀 버튼으로 완료 감지
+    // 3) 심의 진행(로더) 또는 결과가 나타난다 — 결과 뷰의 복귀 버튼으로 완료 감지.
+    //    결과 뷰에 복귀 버튼이 2개 이상 동시 렌더될 수 있어(shared/verdict/pristine) OR-셀렉터가
+    //    strict-mode 위반(2+ 매칭)을 낼 수 있으므로 .first()로 첫 매칭만 검사한다.
     await expect(
-      page.locator('#btn-return-pristine-shared, #btn-goto-records-verdict, #btn-return-pristine'),
+      page.locator('#btn-return-pristine-shared, #btn-goto-records-verdict, #btn-return-pristine').first(),
     ).toBeVisible({ timeout: reviewTimeoutMs });
 
     // 4) 결과 화면에 위험 표현 근거/판정이 실제 렌더 (원금 보장 → 위험 탐지)
