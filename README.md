@@ -50,7 +50,7 @@ PYTHONPATH=src python -m pytest -q
 
 | 구분 | 내용 | 필수 여부 |
 |---|---|---|
-| 내부 지식베이스(KB) | `data/laws.json` — 법령/내부기준 **139건**(내부 적용요약 123 + 공식/외부 16, 공식 원문 15 포함, 상세 §16) | 저장소에 번들 (필수) |
+| 내부 지식베이스(KB) | `data/laws.json` — 법령/내부기준 **139건**(내부 적용요약 123 + 공식/외부 16, 공식 원문 15 포함, 상세 §16). ⚠️ 데이터 성격 고지: [`data/DATA_DISCLAIMER.md`](data/DATA_DISCLAIMER.md) — `jb_terms.json`은 실존 계열사명 + **가상 샘플 약관**(실제 약관 아님) | 저장소에 번들 (필수) |
 | 법령정보센터 Open API | `LAW_OPEN_API_KEY` — 공식 법령 원문 fetch (`scripts/fetch_law_open_api_articles.py`) | opt-in |
 | LLM Provider | `ANTHROPIC_API_KEY`(기본) 또는 `OPENAI_API_KEY` — 6인 보드 LLM 판단 | opt-in (미설정 시 deterministic) |
 | Qdrant / Slack / LangSmith | dense RAG / 승인 연계 / eval 추적 | opt-in |
