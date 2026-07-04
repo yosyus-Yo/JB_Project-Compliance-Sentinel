@@ -652,7 +652,7 @@ app.post('/api/review/stream', async (req, res) => {
 
     // worker SSE를 파싱하여 node progress 프레임은 그대로 전달하고, 최종 result 프레임만
     // normalizeEngineReport로 정규화한다. 비스트리밍 /api/review와 동일한 report 구조를
-    // 보장해야 프론트의 reportToAuditItem/ReportView가 동일하게 동작한다(raw final_report는
+    // 보장해야 프론트의 reportToAuditItem 등 리포트 렌더 경로가 동일하게 동작한다(raw final_report는
     // board_diagnostics를 {}로 주는 등 프론트 계약과 어긋남).
     const reader = (workerResponse.body as ReadableStream<Uint8Array>).getReader();
     const decoder = new TextDecoder();

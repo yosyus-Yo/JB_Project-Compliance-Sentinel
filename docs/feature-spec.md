@@ -83,12 +83,14 @@ Compliance Sentinel은 금융 마케팅 콘텐츠(앱푸시, SNS, 배너, 이메
 
 | Phase | 작업 | 트리거 |
 |---|---|---|
-| P0 (현재) | deterministic MVP + JB 약관 ingestion | 완료 |
+| P0 (현재) | deterministic MVP + JB 약관 ingestion + 역할별 탭 RBAC 가드 + 지식 목록/삭제 UI | 완료 |
 | P1 (D+5) | 법령정보센터 Open API key 활성 + KB 자동 확장 | env에 LAW_OPEN_API_KEY 설정 |
-| P2 (D+10) | LangGraph StateGraph swap (행동 동등성 보장) | `pip install langgraph` + USE_LANGGRAPH=1 |
-| P3 (D+20) | Presidio + Microsoft 한국 NER recognizer 통합 | 자체 regex → ML-based PII |
-| P4 (D+25) | DeepEval/RAGAS pytest CI gate | PR merge 자동 차단 |
-| P5 (D+30+) | AgentCompiler / SGLang / Mem0 / Zep 점진 도입 | baseline 대비 latency/cost 20%+ 개선 시만 |
+| P2 (D+10) | LangGraph StateGraph swap + **HITL Resume 엔드포인트(`/api/workflow/resume`) + 체크포인트 저장/복구** | `pip install langgraph` + USE_LANGGRAPH=1 |
+| P3 (D+15) | **L1 사용자 인증 + 세션 관리(쿠키/JWT)** — 데모용 역할 스위처를 프로덕션 세션으로 전환 | 멀티유저 운영 배포 시 |
+| P4 (D+20) | Presidio + Microsoft 한국 NER recognizer 통합 | 자체 regex → ML-based PII |
+| P5 (D+25) | **Notion/Jira/Slack live publish 실연동** | 워크플로우 발행 opt-in (`CS_ENABLE_WORKFLOW_PUBLISH=1`) |
+| P6 (D+30) | DeepEval/RAGAS pytest CI gate | PR merge 자동 차단 |
+| P7 (D+35+) | AgentCompiler / SGLang / Mem0 / Zep 점진 도입 | baseline 대비 latency/cost 20%+ 개선 시만 |
 
 본 로드맵의 모든 단계는 `langgraph_adapter.py` 인터페이스 덕분에 기존 코드 변경 0으로 swap 가능합니다.
 
@@ -128,6 +130,7 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 | 0.1.0 | 초기 MVP | 6인 보드 + 검증자 루프 + audit log + Chainlit/FastAPI skeleton |
 | 0.2.0 | 2026-05-13 | PII 한글 인접 어미 fix, 사용자 인용 verifier wiring (AC-002), JB 4개 계열사 약관 ingestion, LangGraph swap adapter, 법령정보센터 API skeleton |
 | 0.3.0 | 2026-05-21 | 기능명세서 V2 정합성 보강: `evidence`/`verifier_result`/`confidence_score`/`review_request_id`/`schema_validation` 노출, 캐피탈 할부 loan 분류, 혼합 다국어 위험표현 동시 탐지, runtime guard 추가 |
+| 0.4.0 | 2026-07-04 | 死코드 컴포넌트(ReportView/WorkflowSteps) 제거, 로드맵 명시 확장 — HITL Resume·L1 인증/세션·외부 live publish(Notion/Jira/Slack)를 각각 P2~P5로 편입(구현 아닌 향후 계획 선언) |
 
 ### Disclaimer
 
