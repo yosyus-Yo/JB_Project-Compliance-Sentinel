@@ -20,7 +20,7 @@ const TAB_ROLES: Record<string, Role[]> = {
 // 데모/제출 UI에서 숨기는 탭. RBAC 로직(canDelete/canSettings 등)은 그대로 유지되므로
 // "책임질 수 있는 AI"(RBAC/SoD) 근거는 코드로 남고, 시연 화면에서만 노출을 차단한다.
 // 재노출하려면 이 집합에서 해당 탭을 제거하면 nav·접근가드·렌더가 한 번에 복원된다.
-const HIDDEN_TABS = new Set<string>(["admin"]);
+const HIDDEN_TABS = new Set<string>([]);
 
 export const canSeeTab = (role: Role | undefined, tab: string): boolean =>
   HIDDEN_TABS.has(tab)

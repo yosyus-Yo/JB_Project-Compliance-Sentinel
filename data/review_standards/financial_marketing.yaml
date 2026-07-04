@@ -5,11 +5,12 @@ name: financial-marketing-content-standards
 forbidden_expressions:
   - id: GUARANTEED_PRINCIPAL
     severity: HIGH
-    patterns: ["원금 보장", "원금보장", "元本保証"]
+    patterns: ["원금 보장", "원금보장", "元本保証", "principal guaranteed", "guaranteed principal", "principal protected", "no loss of principal"]
     law_name: "금융소비자보호법"
     article_no: "제22조(허위·과장 광고 금지)"
     rationale: "원금 보장 표현은 금융상품 성격에 따라 소비자 오인을 유발할 수 있습니다."
     suggested_revision: "예금자보호 여부, 보호 한도, 상품 조건을 명확히 고지하세요."
+    suggested_revision_en: "State whether the product is covered by depositor protection, the coverage limit, and the product conditions clearly."
   - id: ZERO_RISK
     severity: HIGH
     patterns: ["무위험", "원금 손실 걱정 전혀 없", "원금 손실 걱정 없", "zero risk", "零风险", "không rủi ro", "リスクなし", "tanpa risiko"]
@@ -17,6 +18,7 @@ forbidden_expressions:
     article_no: "제22조(허위·과장 광고 금지)"
     rationale: "무위험·원금 손실 없음 표현은 투자·대출·예금 광고에서 리스크를 축소·오인하게 합니다."
     suggested_revision: "상품 조건과 손실/변동 가능성 또는 심사 조건을 함께 안내하세요."
+    suggested_revision_en: "Present the product conditions together with the possibility of loss/variability or the review conditions."
   - id: GUARANTEED_RETURN
     severity: HIGH
     patterns: ["확정 수익", "확정수익", "확정 보장", "guaranteed", "guaranteed return", "guaranteed profit", "保证收益", "lợi nhuận chắc chắn", "必ず利益", "untung pasti"]
@@ -24,6 +26,7 @@ forbidden_expressions:
     article_no: "제22조(허위·과장 광고 금지)"
     rationale: "수익·금리 확정·보장 표현은 금융광고에서 과장 또는 오인 소지가 큽니다."
     suggested_revision: "조건 충족 시 가능한 혜택과 변동/제한 조건을 분리해 표시하세요."
+    suggested_revision_en: "Separately state the benefits available when conditions are met and the applicable variability/limitation conditions."
   - id: EVERYONE_BEST_RATE
     severity: MEDIUM
     patterns: ["누구나", "모든 고객", "직업과 관계없이", "직업 관계없이", "everyone", "所有客户", "ai cũng", "全員", "semua nasabah"]
@@ -31,6 +34,7 @@ forbidden_expressions:
     article_no: "제22조(허위·과장 광고 금지)"
     rationale: "모든 고객 대상 표현은 실제 우대조건·심사조건과 충돌할 수 있습니다."
     suggested_revision: "대상 조건, 가입 한도, 심사 기준을 명확히 고지하세요."
+    suggested_revision_en: "Clearly disclose the eligibility conditions, enrollment limits, and review criteria."
   - id: GUARANTEED_APPROVAL
     severity: CRITICAL
     patterns: ["100% 승인", "100% 대출", "100% 가입 승인", "100%가입승인", "100% 가입", "무조건 승인", "무조건 가입 승인", "즉시 승인", "신용점수 상관없이", "신용등급 상관없이", "심사 없음", "심사없이", "심사 절차는 전부 생략", "심사 절차를 전부 생략", "심사 절차 전부 생략", "묻지도 따지지도 않고", "단 한 분도 거절", "거절되지 않습니다", "everyone approved", "langsung disetujui", "được duyệt vay"]
@@ -38,6 +42,7 @@ forbidden_expressions:
     article_no: "제21조(부당권유행위 금지)·제22조"
     rationale: "대출 승인 보장·심사 생략 표현은 여신심사 의무를 무력화하고 소비자를 오인하게 하는 고위험 표현입니다."
     suggested_revision: "심사 결과에 따라 승인 여부·한도·금리가 달라질 수 있음을 명시하세요."
+    suggested_revision_en: "State that approval, credit limit, and interest rate may vary depending on the review result."
   - id: LOWEST_RATE_GUARANTEE
     severity: HIGH
     patterns: ["최저금리 보장", "최저 금리 보장", "최저금리보장", "업계 최저", "업계 최저금리", "업계 최저 금리", "가장 저렴", "무조건 더 저렴", "최고 금리 보장", "최고금리 보장", "최고금리보장", "lowest rate guaranteed", "best rate guaranteed", "保证最低利率"]
@@ -45,6 +50,7 @@ forbidden_expressions:
     article_no: "제3조(부당한 비교광고)"
     rationale: "최저/최고·업계 최저 등 객관적 근거 없는 최상급·비교 표현은 소비자 오인을 유발합니다."
     suggested_revision: "적용 금리는 시장 상황·심사 결과에 따라 달라질 수 있으며 객관적 근거를 함께 제시하세요."
+    suggested_revision_en: "State that the applied rate may vary with market conditions and review results, and provide objective supporting evidence."
   # ───────── v2 신규: 고위험 위반 7종 ─────────
   - id: ACCOUNT_CREDENTIAL_COLLECTION
     severity: CRITICAL
@@ -90,11 +96,12 @@ forbidden_expressions:
     suggested_revision: "혜택의 조건, 대상, 지급 제한, 기간을 명확히 고지하세요."
   - id: URGENCY_PRESSURE
     severity: MEDIUM
-    patterns: ["오늘 자정까지", "오늘 자정까지만", "지금 바로 서둘러", "서둘러 신청", "평생 후회", "놓치면 평생", "망설이지 말고"]
+    patterns: ["오늘 자정까지", "오늘 자정까지만", "지금 바로 서둘러", "서둘러 신청", "평생 후회", "놓치면 평생", "망설이지 말고", "limited time offer", "limited-time offer", "limited time only", "act now", "last chance", "hurry", "don't miss out", "dont miss out", "ends tonight", "ends today", "only today", "before it's gone", "before its gone"]
     law_name: "금융소비자보호법"
     article_no: "제21조(부당권유행위 금지)"
     rationale: "긴박감·공포를 조성해 숙려를 방해하는 압박형 표현은 부당권유 소지가 있습니다."
     suggested_revision: "충분한 정보 제공 후 소비자가 숙고하여 선택할 수 있도록 압박 표현을 제거하세요."
+    suggested_revision_en: "Remove urgency/pressure language so the consumer can decide after sufficient information and deliberation."
   # 다크패턴(소비자활동알림/감정적압박)은 부분문자열 오탐 방지를 위해
   # marketing_reviewer.add_dark_pattern_findings()에서 정규식+negative lookahead로 처리.
 required_disclosures:

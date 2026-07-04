@@ -38,8 +38,9 @@ PYTHONPATH=src python -m compliance_sentinel.cli --json \
   "JB 슈퍼적금 출시! 누구나 연 8% 확정 수익, 원금 보장!"
 
 # 3) 전체 테스트 (재현성 확인) → fresh venv + ".[dev]"만으로 "1489 passed, 50 skipped, 0 failed" 재현 (§16)
-#    (skip 50건 = llm/mcp/rag/telemetry 등 optional extras 미설치 시 자동 skip — 실패 아님)
-#    (전체 extras 설치 시 통과 수 증가)
+#    passed 수는 설치된 optional deps에 따라 변동: 최소 ~1474 · .[dev] 1489 · 전체 extras 1545.
+#    skip은 optional extras(llm/mcp/rag/telemetry/langgraph 등) 미설치 시 자동 발생 — 실패 아님.
+#    ✅ failed=0 은 모든 설치 환경에서 불변 (배지의 핵심 품질 지표). 배지 passed 수는 문서화된 .[dev] 기준.
 PYTHONPATH=src python -m pytest -q
 ```
 

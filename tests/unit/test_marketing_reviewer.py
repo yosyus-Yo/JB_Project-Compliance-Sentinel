@@ -423,3 +423,52 @@ class TestPdfAcF05MultilingualRisk:
         from compliance_sentinel.marketing_reviewer import review_marketing_content
         review = review_marketing_content(f"This product is {phrase} for everyone.")
         assert any(phrase.lower() in f.evidence.lower() for f in review.findings), f"F-05 AC 미탐지: {phrase}"
+
+
+class TestEnglishDarkPatternsAndRevision:
+    """심사 리포트 #4·#5: 영어 다크패턴 탐지 + 영어 입력 시 영어 수정안 출력."""
+
+    @pytest.mark.parametrize(
+        "phrase",
+        ["limited time offer", "act now", "last chance", "hurry", "don't miss out"],
+    )
+    def test_english_urgency_dark_pattern_detected(self, phrase):
+        # #5: 영어 압박형 다크패턴이 탐지되어야 한다 (이전엔 한국어 패턴만 존재).
+        from compliance_sentinel.marketing_reviewer import review_marketing_content
+        review = review_marketing_content(
+            f"JB Super Savings! Guaranteed 8% returns, {phrase}!"
+        )
+        assert review.language == "en"
+        joined = " ".join(f"{f.rule_id} {f.evidence}".lower() for f in review.findings)
+        assert phrase.lower() in joined, f"#5 영어 다크패턴 미탐지: {phrase}"
+
+    def test_english_social_proof_and_emotion_detected(self):
+        from compliance_sentinel.marketing_reviewer import review_marketing_content
+        review = review_marketing_content(
+            "Guaranteed returns! 1,234 people just signed up. Don't miss out!"
+        )
+        rule_ids = {f.rule_id for f in review.findings}
+        assert "DARK_PATTERN_SOCIAL_PROOF" in rule_ids
+        assert "DARK_PATTERN_EMOTIONAL_PRESSURE" in rule_ids
+
+    def test_english_input_yields_english_revision(self):
+        # #4: 영어 입력이면 모든 수정안이 영어(ASCII)여야 한다 (한국어 혼입 금지).
+        from compliance_sentinel.marketing_reviewer import review_marketing_content
+        review = review_marketing_content(
+            "JB Super Savings! Guaranteed 8% returns, zero risk, limited time offer - act now!"
+        )
+        assert review.language == "en"
+        assert review.findings, "영어 입력에서 finding이 없음"
+        for f in review.findings:
+            assert f.suggested_revision.isascii(), (
+                f"#4 영어 입력인데 한국어 수정안: [{f.rule_id}] {f.suggested_revision}"
+            )
+
+    def test_korean_input_still_korean_revision(self):
+        # 회귀 방어: 한국어 입력은 여전히 한국어 수정안(영어 경로가 한국어를 오염시키지 않음).
+        from compliance_sentinel.marketing_reviewer import review_marketing_content
+        review = review_marketing_content("이 상품은 원금 보장, 확정 수익을 제공합니다.")
+        assert review.language == "ko"
+        assert any(
+            not f.suggested_revision.isascii() for f in review.findings
+        ), "한국어 입력인데 한국어 수정안이 사라짐(회귀)"

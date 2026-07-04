@@ -48,7 +48,12 @@ def detect_language(text: str) -> Language:
         return "vi"
     if any(token in lowered for token in ["untung", "tanpa risiko", "nasabah", "disetujui"]):
         return "id"
-    if re.search(r"[a-zA-Z]", text) and any(token in lowered for token in ["guaranteed", "zero risk", "everyone", "return", "profit"]):
+    if re.search(r"[a-zA-Z]", text) and any(token in lowered for token in [
+        "guaranteed", "guarantee", "zero risk", "no risk", "risk-free", "risk free",
+        "everyone", "return", "profit", "limited time", "act now", "last chance",
+        "hurry", "don't miss", "dont miss", "instant approval", "approved",
+        "100%", "principal", "lowest rate",
+    ]):
         return "en"
     if re.search(r"[가-힣]", text):
         return "ko"
@@ -233,7 +238,12 @@ def rule_based_review(text: str, *, language: Language, channel: Channel, produc
                 # issue는 룰별 구체 사유(rationale)로 채워 '왜 위반인지'를 명확히 한다.
                 issue=f"'{pattern}': {rationale}",
                 rationale=rationale,
-                suggested_revision=rule.get("suggested_revision", "조건과 제한사항을 명확히 고지하세요."),
+                # 영어 입력이면 영어 수정안(suggested_revision_en) 우선, 없으면 한국어 fallback.
+                suggested_revision=(
+                    rule.get("suggested_revision_en")
+                    if language == "en" and rule.get("suggested_revision_en")
+                    else rule.get("suggested_revision", "조건과 제한사항을 명확히 고지하세요.")
+                ),
                 language=language,
                 channel=channel,
                 product_type=product_type,
@@ -349,7 +359,11 @@ def add_required_disclosure_findings(
         evidence=", ".join(gaps[:4]),
         issue=f"{product_type} 콘텐츠의 필수 고지 항목이 누락되었거나 불충분합니다.",
         rationale="금융상품 광고는 혜택뿐 아니라 조건·한도·위험·비용을 균형 있게 표시해야 합니다.",
-        suggested_revision="누락 고지 항목을 본문 또는 랜딩페이지 상단 고지 영역에 명확히 추가하세요.",
+        suggested_revision=(
+            "Clearly add the missing required disclosures to the body or the top disclosure area of the landing page."
+            if language == "en"
+            else "누락 고지 항목을 본문 또는 랜딩페이지 상단 고지 영역에 명확히 추가하세요."
+        ),
         language=language,
         channel=channel,
         product_type=product_type,
@@ -444,6 +458,19 @@ _DARK_EMOTION_CONDITIONAL_RE = re.compile(
 _DARK_EMOTION_CORE_RE = re.compile(
     r"나만\s*손해|당신만\s*(?:모르|못\s*받|못받|빼고|소외)|남들\s*다\s*하는데|당신만\s*몰라"
 )
+# 영어 다크패턴 — 소비자 활동 알림(social proof) / 감정적 압박(FOMO). #5 다국어 커버리지.
+_DARK_SOCIAL_PROOF_EN_RE = re.compile(
+    r"\d[\d,]*\s*(?:people|customers|users)\s*(?:just\s*)?(?:signed up|joined|applied|are viewing|bought)"
+    r"|everyone\s*is\s*(?:buying|joining|signing up)"
+    r"|join\s*(?:thousands|millions)"
+    r"|others\s*are\s*(?:buying|applying)\s*(?:now|right now)",
+    re.IGNORECASE,
+)
+_DARK_EMOTION_EN_RE = re.compile(
+    r"don'?t\s*miss\s*out|you'?ll\s*regret|fear\s*of\s*missing\s*out\b|\bfomo\b"
+    r"|everyone\s*but\s*you|only\s*you\s*don'?t",
+    re.IGNORECASE,
+)
 
 
 def add_dark_pattern_findings(
@@ -461,7 +488,7 @@ def add_dark_pattern_findings(
       - "N명이 가입 거절"(내부 보고) 등 부정 맥락 오탐 차단
       - "지금 안 하면 안 되는 필수 고지"(의무 고지) 등 사실 고지 오탐 차단
     """
-    def _append(rule_id: str, evidence: str, article: str, rationale: str, revision: str) -> None:
+    def _append(rule_id: str, evidence: str, article: str, rationale: str, revision: str, revision_en: str = "") -> None:
         findings.append(MarketingFinding(
             id=f"MF-{len(findings)+1:03d}",
             rule_id=rule_id,
@@ -469,7 +496,7 @@ def add_dark_pattern_findings(
             evidence=evidence,
             issue=f"다크패턴(압박형): {rationale}",
             rationale=rationale,
-            suggested_revision=revision,
+            suggested_revision=revision_en if language == "en" and revision_en else revision,
             language=language,
             channel=channel,
             product_type=product_type,
@@ -481,19 +508,21 @@ def add_dark_pattern_findings(
             applicability_reason="소비자 대상 금융상품 광고의 압박형 표현에 적용됩니다.",
         ))
 
-    m = _DARK_SOCIAL_PROOF_RE.search(text)
+    m = _DARK_SOCIAL_PROOF_RE.search(text) or _DARK_SOCIAL_PROOF_EN_RE.search(text)
     if m:
         _append(
             "DARK_PATTERN_SOCIAL_PROOF", m.group(0).strip(), "압박형-소비자 활동 알림",
             "다른 소비자의 가입·신청 수를 표시해 의사결정을 압박하는 표현(소비자 활동 알림)입니다.",
             "타 소비자의 가입 수·실시간 신청 표시 등 의사결정을 압박하는 사회적 증거 표현을 제거하세요.",
+            "Remove social-proof pressure such as other consumers' sign-up counts or real-time application notices.",
         )
-    me = _DARK_EMOTION_CORE_RE.search(text) or _DARK_EMOTION_CONDITIONAL_RE.search(text)
+    me = _DARK_EMOTION_CORE_RE.search(text) or _DARK_EMOTION_CONDITIONAL_RE.search(text) or _DARK_EMOTION_EN_RE.search(text)
     if me:
         _append(
             "DARK_PATTERN_EMOTIONAL_PRESSURE", me.group(0).strip(), "압박형-감정적 언어 사용",
             "불안·소외감 등 감정을 자극해 특정 행동을 압박하는 표현(감정적 언어 사용)입니다.",
             "소외감·불안을 자극하는 감정적 압박 표현을 제거하고 상품 사실 정보 중심으로 안내하세요.",
+            "Remove emotional-pressure language that exploits anxiety or fear of missing out; present product facts instead.",
         )
     return findings
 
